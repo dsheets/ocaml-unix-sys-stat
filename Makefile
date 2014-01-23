@@ -4,16 +4,36 @@ FINDLIB_NAME=unix-sys-stat
 MOD_NAME=unix_sys_stat
 BUILD=_build/lib
 
+HAS_CTYPES := $(shell ocamlfind query ctypes.foreign > /dev/null; echo $$?)
+
+ifneq ($(HAS_CTYPES),0)
+SRC=lib/no_ctypes
+FLAGS=
+EXTRA_META=requires = \"unix\"
+else
+SRC=lib/ctypes
+FLAGS=-package ctypes.foreign
+EXTRA_META=requires = \"unix ctypes.foreign\"
+endif
+
 build:
 	mkdir -p $(BUILD)
-	cc -c -o $(BUILD)/$(MOD_NAME)_stubs.o lib/$(MOD_NAME)_stubs.c
-	ocamlfind ocamlc -o $(BUILD)/$(MOD_NAME).cmi -c lib/$(MOD_NAME).mli
+	cc -c -Wall -fPIC -o $(BUILD)/$(MOD_NAME)_stubs.o lib/$(MOD_NAME)_stubs.c
+	ocamlfind ocamlc -o $(BUILD)/$(MOD_NAME)_common.cmi \
+		-c lib/$(MOD_NAME)_common.mli
+	ocamlfind ocamlc -o $(BUILD)/$(MOD_NAME).cmi -I $(BUILD) -I lib \
+		$(FLAGS) -c $(SRC)/$(MOD_NAME).mli
 	ocamlfind ocamlmklib -o $(BUILD)/$(MOD_NAME) -I $(BUILD) \
-		lib/$(MOD_NAME).ml $(BUILD)/$(MOD_NAME)_stubs.o
+		$(FLAGS) lib/$(MOD_NAME)_common.ml $(SRC)/$(MOD_NAME).ml \
+		$(BUILD)/$(MOD_NAME)_stubs.o
 
-install:
+META: META.in
+	cp META.in META
+	echo $(EXTRA_META) >> META
+
+install: META
 	ocamlfind install $(FINDLIB_NAME) META \
-		lib/$(MOD_NAME).mli \
+		$(SRC)/$(MOD_NAME).mli \
 		$(BUILD)/$(MOD_NAME).cmi \
 		$(BUILD)/$(MOD_NAME).cma \
 		$(BUILD)/$(MOD_NAME).cmxa \
@@ -27,4 +47,5 @@ reinstall: uninstall install
 
 clean:
 	rm -rf _build
-	rm -f lib/$(MOD_NAME).cm? lib/$(MOD_NAME).o
+	bash -c "rm -f lib/$(MOD_NAME)_common.{cm?,o} META"
+	bash -c "rm -f lib/{ctypes,no_ctypes}/$(MOD_NAME).{cm?,o}"
