@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 #include <caml/mlvalues.h>
 #include <caml/alloc.h>
+#include <caml/threads.h>
 
 #ifndef S_IFMT
 #define S_IFMT (-1)
@@ -55,6 +56,14 @@ CAMLprim value unix_sys_stat_s_ififo() { return Val_int(S_IFIFO); }
 CAMLprim value unix_sys_stat_s_iflnk() { return Val_int(S_IFLNK); }
 CAMLprim value unix_sys_stat_s_ifsock() { return Val_int(S_IFSOCK); }
 
+int unix_sys_stat_mknod(const char *pathname, mode_t mode, dev_t dev) {
+  int retval;
+  caml_release_runtime_system();
+  retval = mknod(pathname, mode, dev);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
 value unix_sys_stat_mknod_ptr (value _) {
-  return caml_copy_int64((intptr_t)(void *)mknod);
+  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_mknod);
 }
