@@ -29,4 +29,6 @@ let mknod =
     (funptr ~check_errno:true (string @-> mode_t @-> dev_t @-> returning int))
     (ptr_of_raw_address (unix_sys_stat_mknod_ptr ()))
   in
-  fun pathname mode dev -> ignore (c pathname mode dev)
+  fun pathname mode dev ->
+    try ignore (c pathname mode dev)
+    with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"mknod",pathname))
