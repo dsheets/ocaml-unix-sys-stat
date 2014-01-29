@@ -15,7 +15,7 @@
  *
  *)
 
-type t = Unix.stats
+type t = Unix.LargeFile.stats
 
 module File_kind = struct
   type t = Unix.file_kind
@@ -98,8 +98,10 @@ module File_kind = struct
     let index = index_of_defns defns in
     (defns,index)
 
-  let of_code ~host code =
+  let of_code_exn ~host code =
     let (_,index) = host in
-    try Some (Hashtbl.find index code)
-    with Not_found -> None
+    Hashtbl.find index code
+
+  let of_code ~host code =
+    try Some (of_code_exn ~host code) with Not_found -> None
 end

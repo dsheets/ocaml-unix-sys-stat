@@ -4,7 +4,7 @@ FINDLIB_NAME=unix-sys-stat
 MOD_NAME=unix_sys_stat
 BUILD=_build/lib
 
-HAS_CTYPES := $(shell ocamlfind query ctypes.foreign > /dev/null; echo $$?)
+HAS_CTYPES := $(shell ocamlfind query ctypes.foreign fd-send-recv > /dev/null; echo $$?)
 
 ifneq ($(HAS_CTYPES),0)
 SRC=lib/no_ctypes
@@ -12,8 +12,8 @@ FLAGS=
 EXTRA_META=requires = \"unix\"
 else
 SRC=lib/ctypes
-FLAGS=-package ctypes.foreign
-EXTRA_META=requires = \"unix ctypes.foreign\"
+FLAGS=-package ctypes.foreign -package fd-send-recv
+EXTRA_META=requires = \"unix ctypes.foreign fd-send-recv\"
 endif
 
 build:

@@ -67,3 +67,27 @@ int unix_sys_stat_mknod(const char *pathname, mode_t mode, dev_t dev) {
 value unix_sys_stat_mknod_ptr (value _) {
   return caml_copy_int64((intptr_t)(void *)unix_sys_stat_mknod);
 }
+
+int unix_sys_stat_stat(const char *path, struct stat *buf) {
+  int retval;
+  caml_release_runtime_system();
+  retval = stat(path, buf);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+value unix_sys_stat_stat_ptr (value _) {
+  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_stat);
+}
+
+int unix_sys_stat_fstat(int fd, struct stat *buf) {
+  int retval;
+  caml_release_runtime_system();
+  retval = fstat(fd, buf);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+value unix_sys_stat_fstat_ptr (value _) {
+  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_fstat);
+}

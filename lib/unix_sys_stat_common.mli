@@ -15,7 +15,7 @@
  *
  *)
 
-type t = Unix.stats
+type t = Unix.LargeFile.stats
 
 module File_kind : sig
   type t = Unix.file_kind
@@ -24,8 +24,9 @@ module File_kind : sig
 
   val host : host
 
-  val to_code : host:host -> t -> int option
-  val of_code : host:host -> int -> t option
+  val to_code     : host:host -> t -> int option
+  val of_code_exn : host:host -> int -> t
+  val of_code     : host:host -> int -> t option
 
   val to_string : t -> string
 end

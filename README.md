@@ -4,5 +4,6 @@ ocaml-unix-sys-stat
 [ocaml-unix-sys-stat](https://github.com/dsheets/ocaml-unix-sys-stat) provides
 host-dependent sys/stat.h access.
 
-**WARNING**: not portable due to *mknod* wrapper that assumes 64-bit
-  instruction pointers.
+**WARNING**: not portable due to *mknod*, *stat*, and *fstat* wrappers
+that assume 64-bit instruction pointers. Also, POSIX type coercions
+sizes are hard-coded. This is not ideal.
