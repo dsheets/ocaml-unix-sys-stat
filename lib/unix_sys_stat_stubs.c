@@ -15,12 +15,17 @@
  *
  */
 
+#define _BSD_SOURCE
+
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <caml/mlvalues.h>
 #include <caml/alloc.h>
 #include <caml/threads.h>
+
+#define IGN(x) (void)(x)
+#define v value
 
 #ifndef S_IFMT
 #define S_IFMT (-1)
@@ -47,14 +52,21 @@
 #define S_IFSOCK (-1)
 #endif
 
-CAMLprim value unix_sys_stat_s_ifmt() { return Val_int(S_IFMT); }
-CAMLprim value unix_sys_stat_s_ifdir() { return Val_int(S_IFDIR); }
-CAMLprim value unix_sys_stat_s_ifchr() { return Val_int(S_IFCHR); }
-CAMLprim value unix_sys_stat_s_ifblk() { return Val_int(S_IFBLK); }
-CAMLprim value unix_sys_stat_s_ifreg() { return Val_int(S_IFREG); }
-CAMLprim value unix_sys_stat_s_ififo() { return Val_int(S_IFIFO); }
-CAMLprim value unix_sys_stat_s_iflnk() { return Val_int(S_IFLNK); }
-CAMLprim value unix_sys_stat_s_ifsock() { return Val_int(S_IFSOCK); }
+CAMLprim v unix_sys_stat_s_ifmt(v _) { IGN(_); return Val_int(S_IFMT); }
+CAMLprim v unix_sys_stat_s_ifdir(v _) { IGN(_); return Val_int(S_IFDIR); }
+CAMLprim v unix_sys_stat_s_ifchr(v _) { IGN(_); return Val_int(S_IFCHR); }
+CAMLprim v unix_sys_stat_s_ifblk(v _) { IGN(_); return Val_int(S_IFBLK); }
+CAMLprim v unix_sys_stat_s_ifreg(v _) { IGN(_); return Val_int(S_IFREG); }
+CAMLprim v unix_sys_stat_s_ififo(v _) { IGN(_); return Val_int(S_IFIFO); }
+CAMLprim v unix_sys_stat_s_iflnk(v _) { IGN(_); return Val_int(S_IFLNK); }
+CAMLprim v unix_sys_stat_s_ifsock(v _) { IGN(_); return Val_int(S_IFSOCK); }
+
+CAMLprim v unix_sys_stat_s_irwxu(v _) { IGN(_); return Val_int(S_IRWXU); }
+CAMLprim v unix_sys_stat_s_irwxg(v _) { IGN(_); return Val_int(S_IRWXG); }
+CAMLprim v unix_sys_stat_s_irwxo(v _) { IGN(_); return Val_int(S_IRWXO); }
+CAMLprim v unix_sys_stat_s_isuid(v _) { IGN(_); return Val_int(S_ISUID); }
+CAMLprim v unix_sys_stat_s_isgid(v _) { IGN(_); return Val_int(S_ISGID); }
+CAMLprim v unix_sys_stat_s_isvtx(v _) { IGN(_); return Val_int(S_ISVTX); }
 
 int unix_sys_stat_mknod(const char *pathname, mode_t mode, dev_t dev) {
   int retval;
@@ -64,8 +76,12 @@ int unix_sys_stat_mknod(const char *pathname, mode_t mode, dev_t dev) {
   return retval;
 }
 
-value unix_sys_stat_mknod_ptr (value _) {
-  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_mknod);
+CAMLprim v unix_sys_stat_sizeof_stat(v _) {
+  IGN(_); return Val_int(sizeof(struct stat));
+}
+
+v unix_sys_stat_mknod_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_mknod);
 }
 
 int unix_sys_stat_stat(const char *path, struct stat *buf) {
@@ -76,8 +92,8 @@ int unix_sys_stat_stat(const char *path, struct stat *buf) {
   return retval;
 }
 
-value unix_sys_stat_stat_ptr (value _) {
-  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_stat);
+v unix_sys_stat_stat_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_stat);
 }
 
 int unix_sys_stat_fstat(int fd, struct stat *buf) {
@@ -88,6 +104,6 @@ int unix_sys_stat_fstat(int fd, struct stat *buf) {
   return retval;
 }
 
-value unix_sys_stat_fstat_ptr (value _) {
-  return caml_copy_int64((intptr_t)(void *)unix_sys_stat_fstat);
+v unix_sys_stat_fstat_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_fstat);
 }
