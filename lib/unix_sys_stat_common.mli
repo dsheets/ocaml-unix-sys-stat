@@ -31,3 +31,24 @@ module File_kind : sig
   val to_string : t -> string
 end
 
+module File_perm : sig
+  type t = Unix.file_perm
+
+  type host
+
+  val host : host
+
+  val access_of_code : host:host -> int -> t
+  val full_of_code   : host:host -> int -> t
+
+  val is_suid   : host:host -> t -> bool
+  val is_sgid   : host:host -> t -> bool
+  val is_sticky : host:host -> t -> bool
+end
+
+type host = {
+  file_kind : File_kind.host;
+  file_perm : File_perm.host;
+}
+
+val host : host

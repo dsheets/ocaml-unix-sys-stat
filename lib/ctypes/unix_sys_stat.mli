@@ -23,6 +23,8 @@ open PosixTypes
 module Stat : sig
   type t
 
+  val t : t Ctypes.structure Ctypes.typ
+
   val to_unix : t Ctypes.structure -> Unix.LargeFile.stats
 end
 

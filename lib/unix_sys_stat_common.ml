@@ -29,6 +29,7 @@ module File_kind = struct
   external s_iflnk  : unit -> int = "unix_sys_stat_s_iflnk"  "noalloc"
   external s_ifsock : unit -> int = "unix_sys_stat_s_ifsock" "noalloc"
 
+  (* TODO: Are these optional? POSIX defines all but IFSOCK *)
   type defns = {
     s_ifmt   : int option;
     s_ifdir  : int option;
@@ -100,8 +101,57 @@ module File_kind = struct
 
   let of_code_exn ~host code =
     let (_,index) = host in
-    Hashtbl.find index code
+    Hashtbl.find index (code land (s_ifmt ()))
 
   let of_code ~host code =
     try Some (of_code_exn ~host code) with Not_found -> None
 end
+
+module File_perm = struct
+  type t = Unix.file_perm
+
+  external s_irwxu : unit -> int = "unix_sys_stat_s_irwxu" "noalloc"
+  external s_irwxg : unit -> int = "unix_sys_stat_s_irwxg" "noalloc"
+  external s_irwxo : unit -> int = "unix_sys_stat_s_irwxo" "noalloc"
+  external s_isuid : unit -> int = "unix_sys_stat_s_isuid" "noalloc"
+  external s_isgid : unit -> int = "unix_sys_stat_s_isgid" "noalloc"
+  external s_isvtx : unit -> int = "unix_sys_stat_s_isvtx" "noalloc"
+
+  type defns = {
+    access_mask : int;
+    full_mask   : int;
+    s_isuid     : int;
+    s_isgid     : int;
+    s_isvtx     : int;
+  }
+  type host = defns
+
+  let host =
+    let access_mask = (s_irwxu ()) lor (s_irwxg ()) lor (s_irwxo ()) in
+    let s_isuid = s_isuid () in
+    let s_isgid = s_isgid () in
+    let s_isvtx = s_isvtx () in
+    let full_mask = access_mask lor s_isuid lor s_isgid lor s_isvtx in {
+      access_mask;
+      full_mask;
+      s_isuid;
+      s_isgid;
+      s_isvtx;
+    }
+
+  let access_of_code ~host code = code land host.access_mask
+  let full_of_code   ~host code = code land host.full_mask
+
+  let is_suid   ~host code = (code land host.s_isuid) = host.s_isuid
+  let is_sgid   ~host code = (code land host.s_isgid) = host.s_isgid
+  let is_sticky ~host code = (code land host.s_isvtx) = host.s_isvtx
+end
+
+type host = {
+  file_kind : File_kind.host;
+  file_perm : File_perm.host;
+}
+let host = {
+  file_kind = File_kind.host;
+  file_perm = File_perm.host;
+}
