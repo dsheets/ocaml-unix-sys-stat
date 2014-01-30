@@ -96,6 +96,18 @@ v unix_sys_stat_stat_ptr (v _) {
   IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_stat);
 }
 
+int unix_sys_stat_lstat(const char *path, struct stat *buf) {
+  int retval;
+  caml_release_runtime_system();
+  retval = lstat(path, buf);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+v unix_sys_stat_lstat_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_lstat);
+}
+
 int unix_sys_stat_fstat(int fd, struct stat *buf) {
   int retval;
   caml_release_runtime_system();

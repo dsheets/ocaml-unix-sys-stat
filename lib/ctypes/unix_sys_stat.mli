@@ -35,4 +35,7 @@ val mknod : string -> mode_t -> dev_t -> unit
 val stat : string -> Stat.t Ctypes.structure
 
 (** Can raise Unix.Unix_error *)
+val lstat : string -> Stat.t Ctypes.structure
+
+(** Can raise Unix.Unix_error *)
 val fstat : Unix.file_descr -> Stat.t Ctypes.structure

@@ -107,6 +107,17 @@ let stat =
     try (ignore (c path (addr stat)); stat)
     with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"stat",path))
 
+external unix_sys_stat_lstat_ptr : unit -> int64 = "unix_sys_stat_lstat_ptr"
+
+let lstat =
+  let c = local ~check_errno:true (unix_sys_stat_lstat_ptr ())
+    PosixTypes.(string @-> ptr Stat.t @-> returning int)
+  in
+  fun path ->
+    let stat = make_stat () in
+    try (ignore (c path (addr stat)); stat)
+    with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"lstat",path))
+
 external unix_sys_stat_fstat_ptr : unit -> int64 = "unix_sys_stat_fstat_ptr"
 
 let fstat =
