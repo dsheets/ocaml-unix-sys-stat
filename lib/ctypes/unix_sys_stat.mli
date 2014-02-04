@@ -17,7 +17,7 @@
 
 include module type of Unix_sys_stat_common
 
-open PosixTypes
+open Unsigned
 
 (** TODO: field accessors *)
 module Stat : sig
@@ -25,11 +25,27 @@ module Stat : sig
 
   val t : t Ctypes.structure Ctypes.typ
 
+  val dev_int       : t Ctypes.structure -> uint64
+  val ino_int       : t Ctypes.structure -> uint64
+  val nlink_int     : t Ctypes.structure -> uint64
+  val mode_int      : t Ctypes.structure -> uint32
+  val uid_int       : t Ctypes.structure -> uint32
+  val gid_int       : t Ctypes.structure -> uint32
+  val rdev_int      : t Ctypes.structure -> uint64
+  val size_int      : t Ctypes.structure -> int64
+  val blocks_int    : t Ctypes.structure -> int64
+  val atime_int     : t Ctypes.structure -> int64
+  val atimensec_int : t Ctypes.structure -> uint32
+  val mtime_int     : t Ctypes.structure -> int64
+  val mtimensec_int : t Ctypes.structure -> uint32
+  val ctime_int     : t Ctypes.structure -> int64
+  val ctimensec_int : t Ctypes.structure -> uint32
+
   val to_unix : t Ctypes.structure -> Unix.LargeFile.stats
 end
 
 (** Can raise Unix.Unix_error *)
-val mknod : string -> mode_t -> dev_t -> unit
+val mknod : string -> PosixTypes.mode_t -> PosixTypes.dev_t -> unit
 
 (** Can raise Unix.Unix_error *)
 val stat : string -> Stat.t Ctypes.structure

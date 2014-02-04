@@ -24,54 +24,69 @@ open Unsigned
 
 let of_dev_t     = coerce dev_t     uint64_t
 let of_ino_t     = coerce ino_t     uint64_t
-let of_mode_t    = coerce mode_t    uint32_t
 let of_nlink_t   = coerce nlink_t   uint64_t
+let of_mode_t    = coerce mode_t    uint32_t
 let of_uid_t     = coerce uid_t     uint32_t
 let of_gid_t     = coerce gid_t     uint32_t
 let of_off_t     = coerce off_t     int64_t
+let of_blkcnt_t  = coerce blkcnt_t  int64_t
 let of_time_t    = coerce time_t    int64_t
-
-let float_of_time_t t = Int64.to_float (of_time_t t)
 
 module Stat = struct
   type t
   let t : t structure typ = structure "Stat"
   let ( -:* ) s x = field t s x
-  let dev     = "dev"       -:* dev_t
-  let ino     = "ino"       -:* ino_t
-  let nlink   = "nlink"     -:* nlink_t
-  let mode    = "mode"      -:* mode_t
-  let uid     = "uid"       -:* uid_t
-  let gid     = "gid"       -:* gid_t
-  let _       = "pad0"      -:* uint (* wtf *)
-  let rdev    = "rdev"      -:* dev_t
-  let size    = "size"      -:* off_t
-  let blksize = "blksize"   -:* blksize_t
-  let blocks  = "blocks"    -:* blkcnt_t
-  let atime   = "atime"     -:* time_t
-  let _       = "atimensec" -:* ulong
-  let mtime   = "mtime"     -:* time_t
-  let _       = "mtimensev" -:* ulong
-  let ctime   = "ctime"     -:* time_t
-  let _       = "ctimensec" -:* ulong
+  let dev       = "dev"       -:* dev_t
+  let ino       = "ino"       -:* ino_t
+  let nlink     = "nlink"     -:* nlink_t
+  let mode      = "mode"      -:* mode_t
+  let uid       = "uid"       -:* uid_t
+  let gid       = "gid"       -:* gid_t
+  let _         = "pad0"      -:* uint (* wtf *)
+  let rdev      = "rdev"      -:* dev_t
+  let size      = "size"      -:* off_t
+  let blksize   = "blksize"   -:* blksize_t
+  let blocks    = "blocks"    -:* blkcnt_t
+  let atime     = "atime"     -:* time_t
+  let atimensec = "atimensec" -:* uint32_t (* Linux only? *)
+  let mtime     = "mtime"     -:* time_t
+  let mtimensec = "mtimensev" -:* uint32_t (* Linux only? *)
+  let ctime     = "ctime"     -:* time_t
+  let ctimensec = "ctimensec" -:* uint32_t (* Linux only? *)
 
   let () = seal t
 
-  let to_unix t = Ctypes.(Unix.LargeFile.({
-    st_dev   = UInt64.to_int (of_dev_t (getf t dev)); (* TODO: major/minor? *)
-    st_ino   = UInt64.to_int (of_ino_t (getf t ino));
-    st_kind  = File_kind.(of_code_exn ~host
-                            (UInt32.to_int (of_mode_t (getf t mode))));
-    st_perm  = File_perm.(full_of_code ~host
-                            (UInt32.to_int (of_mode_t (getf t mode))));
-    st_nlink = UInt64.to_int (of_nlink_t (getf t nlink));
-    st_uid   = UInt32.to_int (of_uid_t (getf t uid));
-    st_gid   = UInt32.to_int (of_gid_t (getf t gid));
-    st_rdev  = UInt64.to_int (of_dev_t (getf t rdev)); (* TODO: major/minor? *)
-    st_size  = of_off_t (getf t size);
-    st_atime = float_of_time_t (getf t atime);
-    st_mtime = float_of_time_t (getf t mtime);
-    st_ctime = float_of_time_t (getf t ctime);
+  let dev_int s       = of_dev_t     (getf s dev)
+  let ino_int s       = of_ino_t     (getf s ino)
+  let nlink_int s     = of_nlink_t   (getf s nlink)
+  let mode_int s      = of_mode_t    (getf s mode)
+  let uid_int s       = of_uid_t     (getf s uid)
+  let gid_int s       = of_gid_t     (getf s gid)
+  let rdev_int s      = of_dev_t     (getf s rdev)
+  let size_int s      = of_off_t     (getf s size)
+  let blocks_int s    = of_blkcnt_t  (getf s blocks)
+  let atime_int s     = of_time_t    (getf s atime)
+  let atimensec_int s = getf s atimensec
+  let mtime_int s     = of_time_t    (getf s mtime)
+  let mtimensec_int s = getf s mtimensec
+  let ctime_int s     = of_time_t    (getf s ctime)
+  let ctimensec_int s = getf s ctimensec
+
+  let to_unix t =
+    let mode = UInt32.to_int (mode_int t) in
+    Ctypes.(Unix.LargeFile.({
+      st_dev   = UInt64.to_int (dev_int t);
+      st_ino   = UInt64.to_int (ino_int t);
+      st_kind  = File_kind.(of_code_exn ~host mode);
+      st_perm  = File_perm.(full_of_code ~host mode);
+      st_nlink = UInt64.to_int (nlink_int t);
+      st_uid   = UInt32.to_int (uid_int t);
+      st_gid   = UInt32.to_int (gid_int t);
+      st_rdev  = UInt64.to_int (rdev_int t);
+      st_size  = size_int t;
+      st_atime = Int64.to_float (atime_int t);
+      st_mtime = Int64.to_float (mtime_int t);
+      st_ctime = Int64.to_float (ctime_int t);
   }))
 end
 
