@@ -24,7 +24,7 @@ module File_kind : sig
 
   val host : host
 
-  val to_code     : host:host -> t -> int option
+  val to_code     : host:host -> t -> int
   val of_code_exn : host:host -> int -> t
   val of_code     : host:host -> int -> t option
 
@@ -44,6 +44,20 @@ module File_perm : sig
   val is_suid   : host:host -> t -> bool
   val is_sgid   : host:host -> t -> bool
   val is_sticky : host:host -> t -> bool
+
+  val string_of_code : host:host -> t -> string
+end
+
+module Mode : sig
+  type t = File_kind.t * File_perm.t
+
+  type host
+
+  val host : host
+
+  val to_string : host:host -> t -> string
+
+  val of_code_exn : host:host -> int -> t
 end
 
 type host = {

@@ -119,3 +119,27 @@ int unix_sys_stat_fstat(int fd, struct stat *buf) {
 v unix_sys_stat_fstat_ptr (v _) {
   IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_fstat);
 }
+
+int unix_sys_stat_chmod(const char *path, mode_t mode) {
+  int retval;
+  caml_release_runtime_system();
+  retval = chmod(path, mode);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+v unix_sys_stat_chmod_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_chmod);
+}
+
+int unix_sys_stat_fchmod(int fd, mode_t mode) {
+  int retval;
+  caml_release_runtime_system();
+  retval = fchmod(fd, mode);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+v unix_sys_stat_fchmod_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_fchmod);
+}

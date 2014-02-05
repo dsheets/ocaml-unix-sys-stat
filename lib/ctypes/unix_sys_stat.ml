@@ -73,12 +73,14 @@ module Stat = struct
   let ctimensec_int s = getf s ctimensec
 
   let to_unix t =
-    let mode = UInt32.to_int (mode_int t) in
+    let (st_kind, st_perm) = Mode.(
+      of_code_exn ~host (UInt32.to_int (mode_int t))
+    ) in
     Ctypes.(Unix.LargeFile.({
       st_dev   = UInt64.to_int (dev_int t);
       st_ino   = UInt64.to_int (ino_int t);
-      st_kind  = File_kind.(of_code_exn ~host mode);
-      st_perm  = File_perm.(full_of_code ~host mode);
+      st_kind;
+      st_perm;
       st_nlink = UInt64.to_int (nlink_int t);
       st_uid   = UInt32.to_int (uid_int t);
       st_gid   = UInt32.to_int (gid_int t);
@@ -143,3 +145,23 @@ let fstat =
     let stat = make_stat () in
     try (ignore (c (Fd_send_recv.int_of_fd fd) (addr stat)); stat)
     with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"fstat",""))
+
+external unix_sys_stat_chmod_ptr : unit -> int64 = "unix_sys_stat_chmod_ptr"
+
+let chmod =
+  let c = local ~check_errno:true (unix_sys_stat_chmod_ptr ())
+    PosixTypes.(string @-> mode_t @-> returning int)
+  in
+  fun path mode ->
+    try ignore (c path mode)
+    with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"chmod",path))
+
+external unix_sys_stat_fchmod_ptr : unit -> int64 = "unix_sys_stat_fchmod_ptr"
+
+let fchmod =
+  let c = local ~check_errno:true (unix_sys_stat_fchmod_ptr ())
+    PosixTypes.(int @-> mode_t @-> returning int)
+  in
+  fun fd mode ->
+    try ignore (c (Fd_send_recv.int_of_fd fd) mode)
+    with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"fchmod",""))

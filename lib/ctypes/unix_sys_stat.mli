@@ -55,3 +55,9 @@ val lstat : string -> Stat.t Ctypes.structure
 
 (** Can raise Unix.Unix_error *)
 val fstat : Unix.file_descr -> Stat.t Ctypes.structure
+
+(** Can raise Unix.Unix_error *)
+val chmod : string -> PosixTypes.mode_t -> unit
+
+(** Can raise Unix.Unix_error *)
+val fchmod : Unix.file_descr -> PosixTypes.mode_t -> unit
