@@ -34,6 +34,7 @@ let of_time_t    = coerce time_t    int64_t
 
 module Stat = struct
   type t
+  (* WARNING: TODO: struct layout specific to Linux x86-64 *)
   let t : t structure typ = structure "Stat"
   let ( -:* ) s x = field t s x
   let dev       = "dev"       -:* dev_t

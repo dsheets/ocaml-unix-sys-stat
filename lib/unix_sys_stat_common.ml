@@ -226,6 +226,9 @@ module Mode = struct
     String.blit ps 0 s 1 lps;
     s
 
+  let to_code ~host (kind, perm) =
+    (File_kind.to_code ~host:host.file_kind kind) lor perm
+
   let of_code_exn ~host code =
     let (k_defns,_) = host.file_kind in
     let unknown = lnot (k_defns.File_kind.s_ifmt

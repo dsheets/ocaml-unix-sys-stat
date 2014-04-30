@@ -55,8 +55,8 @@ module Mode : sig
 
   val host : host
 
-  val to_string : host:host -> t -> string
-
+  val to_string   : host:host -> t -> string
+  val to_code     : host:host -> t -> int
   val of_code_exn : host:host -> int -> t
 end
 
