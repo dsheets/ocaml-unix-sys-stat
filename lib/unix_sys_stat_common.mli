@@ -63,6 +63,7 @@ end
 type host = {
   file_kind : File_kind.host;
   file_perm : File_perm.host;
+  mode      : Mode.host;
 }
 
 val host : host
