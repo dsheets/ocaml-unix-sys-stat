@@ -104,6 +104,16 @@ let make_stat () = !@ (
 let local ?check_errno addr typ =
   coerce (ptr void) (funptr ?check_errno typ) (ptr_of_raw_address addr)
 
+external unix_sys_stat_mkdir_ptr : unit -> int64 = "unix_sys_stat_mkdir_ptr"
+
+let mkdir =
+  let c = local ~check_errno:true (unix_sys_stat_mkdir_ptr ())
+    PosixTypes.(string @-> mode_t @-> returning int)
+  in
+  fun pathname mode ->
+    try ignore (c pathname mode)
+    with Unix.Unix_error(e,_,_) -> raise (Unix.Unix_error (e,"mkdir",pathname))
+
 external unix_sys_stat_mknod_ptr : unit -> int64 = "unix_sys_stat_mknod_ptr"
 
 let mknod =

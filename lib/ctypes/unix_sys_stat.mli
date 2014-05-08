@@ -45,6 +45,9 @@ module Stat : sig
 end
 
 (** Can raise Unix.Unix_error *)
+val mkdir : string -> PosixTypes.mode_t -> unit
+
+(** Can raise Unix.Unix_error *)
 val mknod : string -> PosixTypes.mode_t -> PosixTypes.dev_t -> unit
 
 (** Can raise Unix.Unix_error *)

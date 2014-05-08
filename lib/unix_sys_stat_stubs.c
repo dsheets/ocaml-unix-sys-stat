@@ -68,16 +68,28 @@ CAMLprim v unix_sys_stat_s_isuid(v _) { IGN(_); return Val_int(S_ISUID); }
 CAMLprim v unix_sys_stat_s_isgid(v _) { IGN(_); return Val_int(S_ISGID); }
 CAMLprim v unix_sys_stat_s_isvtx(v _) { IGN(_); return Val_int(S_ISVTX); }
 
+CAMLprim v unix_sys_stat_sizeof_stat(v _) {
+  IGN(_); return Val_int(sizeof(struct stat));
+}
+
+int unix_sys_stat_mkdir(const char *pathname, mode_t mode) {
+  int retval;
+  caml_release_runtime_system();
+  retval = mkdir(pathname, mode);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
+v unix_sys_stat_mkdir_ptr (v _) {
+  IGN(_); return caml_copy_int64((intptr_t)(void *)unix_sys_stat_mkdir);
+}
+
 int unix_sys_stat_mknod(const char *pathname, mode_t mode, dev_t dev) {
   int retval;
   caml_release_runtime_system();
   retval = mknod(pathname, mode, dev);
   caml_acquire_runtime_system();
   return retval;
-}
-
-CAMLprim v unix_sys_stat_sizeof_stat(v _) {
-  IGN(_); return Val_int(sizeof(struct stat));
 }
 
 v unix_sys_stat_mknod_ptr (v _) {
