@@ -45,7 +45,7 @@ module File_perm : sig
   val is_sgid   : host:host -> t -> bool
   val is_sticky : host:host -> t -> bool
 
-  val string_of_code : host:host -> t -> string
+  val to_string : host:host -> t -> string
 end
 
 module Mode : sig

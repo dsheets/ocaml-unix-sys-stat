@@ -188,7 +188,7 @@ module File_perm = struct
       else if xc='x' then '-'
       else Char.uppercase xc
     end; s
-  let string_of_code ~host code =
+  let to_string ~host code =
     let u = mask_and_shift host.access_mask host.s_irwxu in
     let g = mask_and_shift host.access_mask host.s_irwxg in
     let o = mask_and_shift host.access_mask host.s_irwxo in
@@ -219,7 +219,7 @@ module Mode = struct
   }
 
   let to_string ~host (k,p) =
-    let ps = File_perm.string_of_code ~host:host.file_perm p in
+    let ps = File_perm.to_string ~host:host.file_perm p in
     let lps = String.length ps in
     let s = String.(create (lps + 1)) in
     s.[0] <- File_kind.to_char k;
