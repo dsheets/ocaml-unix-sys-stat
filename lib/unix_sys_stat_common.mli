@@ -40,6 +40,7 @@ module File_perm : sig
 
   val access_of_code : host:host -> int -> t
   val full_of_code   : host:host -> int -> t
+  val to_code        : host:host -> t   -> int
 
   val is_suid   : host:host -> t -> bool
   val is_sgid   : host:host -> t -> bool

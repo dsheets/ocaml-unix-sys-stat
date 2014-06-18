@@ -15,12 +15,38 @@
  *
  *)
 
-include Unix_sys_stat_common
-
 open Ctypes
 open Foreign
 open PosixTypes
 open Unsigned
+
+module File_kind = struct
+  include Unix_sys_stat_common.File_kind
+end
+
+module File_perm = struct
+  include Unix_sys_stat_common.File_perm
+
+  let view ~host = view ~read:(full_of_code ~host) ~write:(to_code ~host) int
+end
+
+module Mode = struct
+  include Unix_sys_stat_common.Mode
+
+  let view ~host = view ~read:(of_code_exn ~host) ~write:(to_code ~host) int
+end
+
+type t = Unix_sys_stat_common.t
+type host = {
+  file_kind : File_kind.host;
+  file_perm : File_perm.host;
+  mode      : Mode.host;
+}
+let host = {
+  file_kind = File_kind.host;
+  file_perm = File_perm.host;
+  mode      = Mode.host;
+}
 
 let of_dev_t     = coerce dev_t     uint64_t
 let of_ino_t     = coerce ino_t     uint64_t

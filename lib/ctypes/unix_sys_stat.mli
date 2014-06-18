@@ -15,7 +15,22 @@
  *
  *)
 
-include module type of Unix_sys_stat_common
+module File_perm : sig
+  include module type of Unix_sys_stat_common.File_perm
+
+  val view : host:host -> t Ctypes.typ
+end
+
+module Mode : sig
+  include module type of Unix_sys_stat_common.Mode
+
+  val view : host:host -> t Ctypes.typ
+end
+
+include ((module type of Unix_sys_stat_common)
+with module Mode := Mode
+and  module File_perm := File_perm
+)
 
 open Unsigned
 

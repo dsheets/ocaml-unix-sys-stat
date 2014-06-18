@@ -167,12 +167,16 @@ module File_perm = struct
       s_isvtx;
     }
 
-  let mask_and_shift mask code =
+  let mask_and_rshift mask code =
     (code land mask) lsr (find_least_one (Int32.of_int mask))
 
+  let inject_and_lshift mask perm =
+    perm lsl (find_least_one (Int32.of_int mask))
+
   (* TODO: these should standardize the bits *)
-  let access_of_code ~host code = mask_and_shift host.access_mask code
-  let full_of_code   ~host code = mask_and_shift host.full_mask   code
+  let access_of_code ~host code = mask_and_rshift host.access_mask code
+  let full_of_code   ~host code = mask_and_rshift host.full_mask   code
+  let to_code        ~host perm = inject_and_lshift host.full_mask perm
 
   let is_suid   ~host code = (code land host.s_isuid) = host.s_isuid
   let is_sgid   ~host code = (code land host.s_isgid) = host.s_isgid
@@ -189,10 +193,10 @@ module File_perm = struct
       else Char.uppercase xc
     end; s
   let to_string ~host code =
-    let u = mask_and_shift host.access_mask host.s_irwxu in
-    let g = mask_and_shift host.access_mask host.s_irwxg in
-    let o = mask_and_shift host.access_mask host.s_irwxo in
-    let rwx xc mask = string_of_rwx xc (mask_and_shift mask code) in
+    let u = mask_and_rshift host.access_mask host.s_irwxu in
+    let g = mask_and_rshift host.access_mask host.s_irwxg in
+    let o = mask_and_rshift host.access_mask host.s_irwxo in
+    let rwx xc mask = string_of_rwx xc (mask_and_rshift mask code) in
     let s = String.create 9 in
     String.blit
       (rwx (if is_suid ~host code   then 's' else 'x') u)
