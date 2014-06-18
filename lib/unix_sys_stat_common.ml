@@ -15,8 +15,6 @@
  *
  *)
 
-type t = Unix.LargeFile.stats
-
 (* Used for bit indexing.
    See <http://supertech.csail.mit.edu/papers/debruijn.pdf>. *)
 let debruijn32 = 0x077CB531_l

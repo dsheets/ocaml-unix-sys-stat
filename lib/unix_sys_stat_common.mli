@@ -15,8 +15,6 @@
  *
  *)
 
-type t = Unix.LargeFile.stats
-
 module File_kind : sig
   type t = Unix.file_kind
 

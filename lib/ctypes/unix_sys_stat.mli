@@ -15,6 +15,10 @@
  *
  *)
 
+module File_kind : sig
+  include module type of Unix_sys_stat_common.File_kind
+end
+
 module File_perm : sig
   include module type of Unix_sys_stat_common.File_perm
 
@@ -22,15 +26,20 @@ module File_perm : sig
 end
 
 module Mode : sig
-  include module type of Unix_sys_stat_common.Mode
+  type t = File_kind.t * File_perm.t
+
+  include module type of Unix_sys_stat_common.Mode with type t := t
 
   val view : host:host -> t Ctypes.typ
 end
 
-include ((module type of Unix_sys_stat_common)
-with module Mode := Mode
-and  module File_perm := File_perm
-)
+type host = {
+  file_kind : File_kind.host;
+  file_perm : File_perm.host;
+  mode      : Mode.host;
+}
+
+val host : host
 
 open Unsigned
 

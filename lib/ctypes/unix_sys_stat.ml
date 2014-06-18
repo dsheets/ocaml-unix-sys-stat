@@ -36,7 +36,6 @@ module Mode = struct
   let view ~host = view ~read:(of_code_exn ~host) ~write:(to_code ~host) int
 end
 
-type t = Unix_sys_stat_common.t
 type host = {
   file_kind : File_kind.host;
   file_perm : File_perm.host;
@@ -77,7 +76,7 @@ module Stat = struct
   let atime     = "atime"     -:* time_t
   let atimensec = "atimensec" -:* uint32_t (* Linux only? *)
   let mtime     = "mtime"     -:* time_t
-  let mtimensec = "mtimensev" -:* uint32_t (* Linux only? *)
+  let mtimensec = "mtimensec" -:* uint32_t (* Linux only? *)
   let ctime     = "ctime"     -:* time_t
   let ctimensec = "ctimensec" -:* uint32_t (* Linux only? *)
 
