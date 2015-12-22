@@ -1,46 +1,61 @@
-.PHONY: build install uninstall reinstall clean
+.PHONY: build test install uninstall reinstall clean
 
 FINDLIB_NAME=unix-sys-stat
 MOD_NAME=unix_sys_stat
-BUILD=_build/lib
 
-HAS_CTYPES := $(shell ocamlfind query ctypes.foreign fd-send-recv > /dev/null; echo $$?)
+OCAML_LIB_DIR=$(shell ocamlc -where)
 
-ifneq ($(HAS_CTYPES),0)
-SRC=lib/no_ctypes
-FLAGS=
-EXTRA_META=requires = \"unix\"
-else
-SRC=lib/ctypes
-FLAGS=-package ctypes.foreign -package fd-send-recv
-EXTRA_META=requires = \"unix ctypes.foreign fd-send-recv\"
+CTYPES_LIB_DIR=$(shell ocamlfind query ctypes)
+
+OCAMLBUILD=CTYPES_LIB_DIR=$(CTYPES_LIB_DIR) OCAML_LIB_DIR=$(OCAML_LIB_DIR) \
+	ocamlbuild -use-ocamlfind -classic-display
+
+WITH_UNIX=$(shell ocamlfind query ctypes unix > /dev/null 2>&1 ; echo $$?)
+
+TARGETS=.cma .cmxa
+
+PRODUCTS=$(addprefix sys_stat,$(TARGETS))
+
+ifeq ($(WITH_UNIX), 0)
+PRODUCTS+=$(addprefix $(MOD_NAME),$(TARGETS)) \
+          lib$(MOD_NAME)_stubs.a dll$(MOD_NAME)_stubs.so
 endif
 
-CFLAGS=-fPIC -Wall -Wextra -Werror -std=c99
+TYPES=.mli .cmi .cmti
+
+INSTALL:=$(addprefix sys_stat,$(TYPES)) \
+         $(addprefix sys_stat,$(TARGETS))
+
+INSTALL:=$(addprefix _build/lib/,$(INSTALL))
+
+ifeq ($(WITH_UNIX), 0)
+INSTALL_UNIX:=$(addprefix sys_stat_unix,$(TYPES)) \
+              $(addprefix $(MOD_NAME),$(TARGETS))
+
+INSTALL_UNIX:=$(addprefix _build/unix/,$(INSTALL_UNIX))
+
+INSTALL+=$(INSTALL_UNIX)
+endif
+
+ARCHIVES:=_build/lib/sys_stat.a
+
+ifeq ($(WITH_UNIX), 0)
+ARCHIVES+=_build/unix/$(MOD_NAME).a
+endif
 
 build:
-	mkdir -p $(BUILD)
-	cc -c $(CFLAGS) -o $(BUILD)/$(MOD_NAME)_stubs.o lib/$(MOD_NAME)_stubs.c -I$(shell ocamlc -where)
-	ocamlfind ocamlc -o $(BUILD)/$(MOD_NAME)_common.cmi \
-		-c lib/$(MOD_NAME)_common.mli
-	ocamlfind ocamlc -o $(BUILD)/$(MOD_NAME).cmi -I $(BUILD) -I lib \
-		$(FLAGS) -c $(SRC)/$(MOD_NAME).mli
-	ocamlfind ocamlmklib -o $(BUILD)/$(MOD_NAME) -I $(BUILD) \
-		$(FLAGS) lib/$(MOD_NAME)_common.ml $(SRC)/$(MOD_NAME).ml \
-		$(BUILD)/$(MOD_NAME)_stubs.o
+	$(OCAMLBUILD) $(PRODUCTS)
 
-META: META.in
-	cp META.in META
-	echo $(EXTRA_META) >> META
+test: build
+	$(OCAMLBUILD) unix_test/test.native
+	./test.native
 
-install: META
+install:
 	ocamlfind install $(FINDLIB_NAME) META \
-		$(SRC)/$(MOD_NAME).mli \
-		$(BUILD)/$(MOD_NAME).cmi \
-		$(BUILD)/$(MOD_NAME).cma \
-		$(BUILD)/$(MOD_NAME).cmxa \
-		-dll $(BUILD)/dll$(MOD_NAME).so \
-		-nodll $(BUILD)/lib$(MOD_NAME).a $(BUILD)/$(MOD_NAME).a
+		$(INSTALL) \
+		-dll _build/unix/dll$(MOD_NAME)_stubs.so \
+		-nodll _build/unix/lib$(MOD_NAME)_stubs.a \
+		$(ARCHIVES)
 
 uninstall:
 	ocamlfind remove $(FINDLIB_NAME)
@@ -48,6 +63,6 @@ uninstall:
 reinstall: uninstall install
 
 clean:
-	rm -rf _build
-	bash -c "rm -f lib/$(MOD_NAME)_common.{cm?,o} META"
-	bash -c "rm -f lib/{ctypes,no_ctypes}/$(MOD_NAME).{cm?,o}"
+	ocamlbuild -clean
+	rm -f lib/sys_stat.cm? unix/sys_stat_unix.cm? \
+	      lib/sys_stat.o unix/sys_stat_unix.o

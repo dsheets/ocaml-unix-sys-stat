@@ -1,5 +1,5 @@
 (*
- * Copyright (c) 2014 David Sheets <sheets@alum.mit.edu>
+ * Copyright (c) 2015 David Sheets <sheets@alum.mit.edu>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,4 +15,11 @@
  *
  *)
 
-include Unix_sys_stat_common
+open Ctypes
+
+let () =
+  let type_oc = open_out "lib_gen/unix_sys_stat_types_detect.c" in
+  let fmt = Format.formatter_of_out_channel type_oc in
+  Format.fprintf fmt "#include <sys/stat.h>@.";
+  Cstubs.Types.write_c fmt (module Unix_sys_stat_types.C);
+  close_out type_oc;

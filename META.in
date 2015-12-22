@@ -1,5 +1,0 @@
-version = "0.1"
-description = "Host-dependent UNIX sys/stat.h access"
-archive(byte) = "unix_sys_stat.cma"
-archive(native) = "unix_sys_stat.cmxa"
-exists_if = "unix_sys_stat.cma"

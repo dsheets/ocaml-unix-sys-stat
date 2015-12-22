@@ -1,0 +1,17 @@
+version = "0.3.0"
+description = "Unix sys/stat types, maps, and support"
+requires = "bytes"
+archive(byte) = "sys_stat.cma"
+archive(bytes, plugin) = "sys_stat.cma"
+archive(native) = "sys_stat.cmxa"
+archive(native, plugin) = "sys_stat.cmxs"
+exists_if = "sys_stat.cma"
+
+package "unix" (
+  requires = "unix ctypes.stubs unix-sys-stat unix-errno.unix fd-send-recv"
+  archive(byte) = "unix_sys_stat.cma"
+  archive(bytes, plugin) = "unix_sys_stat.cma"
+  archive(native) = "unix_sys_stat.cmxa"
+  archive(native, plugin) = "unix_sys_stat.cmxs"
+  exists_if = "unix_sys_stat.cma"
+)
