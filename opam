@@ -22,7 +22,6 @@ depends: [
   "alcotest" {test}
   "base-bytes"
   "unix-errno"
-  "fd-send-recv"
 ]
 depopts: [
   "base-unix"
