@@ -98,26 +98,26 @@ module File_kind = struct
 
     let to_string (defns, _) =
       let buf = Buffer.create 128 in
-      Buffer.add_string buf (Printf.sprintf "S_IFMT\t%d\n"   defns.mask);
-      Buffer.add_string buf (Printf.sprintf "S_IFDIR\t%d\n"  defns.dir);
-      Buffer.add_string buf (Printf.sprintf "S_IFCHR\t%d\n"  defns.chr);
-      Buffer.add_string buf (Printf.sprintf "S_IFBLK\t%d\n"  defns.blk);
-      Buffer.add_string buf (Printf.sprintf "S_IFREG\t%d\n"  defns.reg);
-      Buffer.add_string buf (Printf.sprintf "S_IFIFO\t%d\n"  defns.fifo);
-      Buffer.add_string buf (Printf.sprintf "S_IFLNK\t%d\n"  defns.lnk);
-      Buffer.add_string buf (Printf.sprintf "S_IFSOCK\t%d\n" defns.sock);
+      Buffer.add_string buf (Printf.sprintf "S_IFMT\t%x\n"   defns.mask);
+      Buffer.add_string buf (Printf.sprintf "S_IFDIR\t%x\n"  defns.dir);
+      Buffer.add_string buf (Printf.sprintf "S_IFCHR\t%x\n"  defns.chr);
+      Buffer.add_string buf (Printf.sprintf "S_IFBLK\t%x\n"  defns.blk);
+      Buffer.add_string buf (Printf.sprintf "S_IFREG\t%x\n"  defns.reg);
+      Buffer.add_string buf (Printf.sprintf "S_IFIFO\t%x\n"  defns.fifo);
+      Buffer.add_string buf (Printf.sprintf "S_IFLNK\t%x\n"  defns.lnk);
+      Buffer.add_string buf (Printf.sprintf "S_IFSOCK\t%x\n" defns.sock);
       Buffer.contents buf
 
     let of_string s =
       Scanf.sscanf s
-        "S_IFMT\t%d\n\
-         S_IFDIR\t%d\n\
-         S_IFCHR\t%d\n\
-         S_IFBLK\t%d\n\
-         S_IFREG\t%d\n\
-         S_IFIFO\t%d\n\
-         S_IFLNK\t%d\n\
-         S_IFSOCK\t%d\n"
+        "S_IFMT\t%x\n\
+         S_IFDIR\t%x\n\
+         S_IFCHR\t%x\n\
+         S_IFBLK\t%x\n\
+         S_IFREG\t%x\n\
+         S_IFIFO\t%x\n\
+         S_IFLNK\t%x\n\
+         S_IFSOCK\t%x\n"
         (fun mask  dir  chr  blk  reg  fifo  lnk  sock -> of_defns {
            mask; dir; chr; blk; reg; fifo; lnk; sock;
          })
@@ -155,22 +155,22 @@ module File_perm = struct
 
     let to_string { rwxu; rwxg; rwxo; suid; sgid; svtx; } =
       let buf = Buffer.create 128 in
-      Buffer.add_string buf (Printf.sprintf "S_IRWXU\t%d\n" rwxu);
-      Buffer.add_string buf (Printf.sprintf "S_IRWXG\t%d\n" rwxg);
-      Buffer.add_string buf (Printf.sprintf "S_IRWXO\t%d\n" rwxo);
-      Buffer.add_string buf (Printf.sprintf "S_ISUID\t%d\n" suid);
-      Buffer.add_string buf (Printf.sprintf "S_ISGID\t%d\n" sgid);
-      Buffer.add_string buf (Printf.sprintf "S_ISVTX\t%d\n" svtx);
+      Buffer.add_string buf (Printf.sprintf "S_IRWXU\t%x\n" rwxu);
+      Buffer.add_string buf (Printf.sprintf "S_IRWXG\t%x\n" rwxg);
+      Buffer.add_string buf (Printf.sprintf "S_IRWXO\t%x\n" rwxo);
+      Buffer.add_string buf (Printf.sprintf "S_ISUID\t%x\n" suid);
+      Buffer.add_string buf (Printf.sprintf "S_ISGID\t%x\n" sgid);
+      Buffer.add_string buf (Printf.sprintf "S_ISVTX\t%x\n" svtx);
       Buffer.contents buf
 
     let of_string s =
       Scanf.sscanf s
-        "S_IRWXU\t%d\n\
-         S_IRWXG\t%d\n\
-         S_IRWXO\t%d\n\
-         S_ISUID\t%d\n\
-         S_ISGID\t%d\n\
-         S_ISVTX\t%d\n"
+        "S_IRWXU\t%x\n\
+         S_IRWXG\t%x\n\
+         S_IRWXO\t%x\n\
+         S_ISUID\t%x\n\
+         S_ISGID\t%x\n\
+         S_ISVTX\t%x\n"
         (fun rwxu rwxg rwxo suid sgid svtx ->
            let access_mask = rwxu lor rwxg lor rwxo in
            let full_mask = access_mask lor suid lor sgid lor svtx in
