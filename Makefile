@@ -18,12 +18,14 @@ PRODUCTS=$(addprefix sys_stat,$(TARGETS))
 
 ifeq ($(WITH_UNIX), 0)
 PRODUCTS+=$(addprefix $(MOD_NAME),$(TARGETS)) \
-          lib$(MOD_NAME)_stubs.a dll$(MOD_NAME)_stubs.so
+          lib$(MOD_NAME)_stubs.a dll$(MOD_NAME)_stubs.so \
+          sys_stat_map.byte
 endif
 
 TYPES=.mli .cmi .cmti
 
 INSTALL:=$(addprefix sys_stat,$(TYPES)) \
+         $(addprefix sys_stat_host,$(TYPES)) \
          $(addprefix sys_stat,$(TARGETS))
 
 INSTALL:=$(addprefix _build/lib/,$(INSTALL))

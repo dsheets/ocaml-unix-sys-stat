@@ -1,0 +1,4 @@
+bin: [
+  "?_build/src/sys_stat_map.byte" {"sys-stat-map"}
+  "_build/src/sys_stat_srcgen.byte" {"sys-stat-srcgen"}
+]

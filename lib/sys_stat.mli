@@ -34,6 +34,9 @@ module File_kind : sig
 
     val of_defns : defns -> t
     val to_defns : t -> defns
+
+    val to_string : t -> string
+    val of_string : string -> t
   end
 
   val to_char : t -> char
@@ -62,6 +65,9 @@ module File_perm : sig
 
     val of_defns : defns -> t
     val to_defns : t -> defns
+
+    val to_string : t -> string
+    val of_string : string -> t
   end
 
   val access_of_code : host:Host.t -> int -> t
@@ -83,6 +89,9 @@ module Mode : sig
       file_kind : File_kind.Host.t;
       file_perm : File_perm.Host.t;
     }
+
+    val to_string : t -> string
+    val of_string : string -> t
   end
 
   val to_string   : host:Host.t -> t -> string
@@ -96,4 +105,7 @@ module Host : sig
     file_perm : File_perm.Host.t;
     mode      : Mode.Host.t;
   }
+
+  val to_string : t -> string
+  val of_string : string -> t
 end

@@ -95,6 +95,32 @@ module File_kind = struct
     let of_defns defns = (defns, index_of_defns defns)
 
     let to_defns (defns, _) = defns
+
+    let to_string (defns, _) =
+      let buf = Buffer.create 128 in
+      Buffer.add_string buf (Printf.sprintf "S_IFMT\t%d\n"   defns.mask);
+      Buffer.add_string buf (Printf.sprintf "S_IFDIR\t%d\n"  defns.dir);
+      Buffer.add_string buf (Printf.sprintf "S_IFCHR\t%d\n"  defns.chr);
+      Buffer.add_string buf (Printf.sprintf "S_IFBLK\t%d\n"  defns.blk);
+      Buffer.add_string buf (Printf.sprintf "S_IFREG\t%d\n"  defns.reg);
+      Buffer.add_string buf (Printf.sprintf "S_IFIFO\t%d\n"  defns.fifo);
+      Buffer.add_string buf (Printf.sprintf "S_IFLNK\t%d\n"  defns.lnk);
+      Buffer.add_string buf (Printf.sprintf "S_IFSOCK\t%d\n" defns.sock);
+      Buffer.contents buf
+
+    let of_string s =
+      Scanf.sscanf s
+        "S_IFMT\t%d\n\
+         S_IFDIR\t%d\n\
+         S_IFCHR\t%d\n\
+         S_IFBLK\t%d\n\
+         S_IFREG\t%d\n\
+         S_IFIFO\t%d\n\
+         S_IFLNK\t%d\n\
+         S_IFSOCK\t%d\n"
+        (fun mask  dir  chr  blk  reg  fifo  lnk  sock -> of_defns {
+           mask; dir; chr; blk; reg; fifo; lnk; sock;
+         })
   end
 
   let of_code_exn ~host code =
@@ -126,6 +152,33 @@ module File_perm = struct
 
     let of_defns defns = defns
     let to_defns defns = defns
+
+    let to_string { rwxu; rwxg; rwxo; suid; sgid; svtx; } =
+      let buf = Buffer.create 128 in
+      Buffer.add_string buf (Printf.sprintf "S_IRWXU\t%d\n" rwxu);
+      Buffer.add_string buf (Printf.sprintf "S_IRWXG\t%d\n" rwxg);
+      Buffer.add_string buf (Printf.sprintf "S_IRWXO\t%d\n" rwxo);
+      Buffer.add_string buf (Printf.sprintf "S_ISUID\t%d\n" suid);
+      Buffer.add_string buf (Printf.sprintf "S_ISGID\t%d\n" sgid);
+      Buffer.add_string buf (Printf.sprintf "S_ISVTX\t%d\n" svtx);
+      Buffer.contents buf
+
+    let of_string s =
+      Scanf.sscanf s
+        "S_IRWXU\t%d\n\
+         S_IRWXG\t%d\n\
+         S_IRWXO\t%d\n\
+         S_ISUID\t%d\n\
+         S_ISGID\t%d\n\
+         S_ISVTX\t%d\n"
+        (fun rwxu rwxg rwxo suid sgid svtx ->
+           let access_mask = rwxu lor rwxg lor rwxo in
+           let full_mask = access_mask lor suid lor sgid lor svtx in
+           {
+             access_mask; full_mask;
+             rwxu; rwxg; rwxo; suid; sgid; svtx
+           }
+        )
   end
 
   let mask_and_rshift mask code =
@@ -181,6 +234,40 @@ module Mode = struct
       file_kind : File_kind.Host.t;
       file_perm : File_perm.Host.t;
     }
+
+    let to_string { file_kind; file_perm } =
+      let kind_s = File_kind.Host.to_string file_kind in
+      let kind_l = String.length kind_s in
+      let perm_s = File_perm.Host.to_string file_perm in
+      let perm_l = String.length perm_s in
+      let buf = Buffer.create (kind_l + perm_l + 12) in
+      Buffer.add_char buf ':';
+      Buffer.add_string buf (string_of_int kind_l);
+      Buffer.add_char buf '\n';
+      Buffer.add_string buf kind_s;
+      Buffer.add_char buf ':';
+      Buffer.add_string buf (string_of_int perm_l);
+      Buffer.add_char buf '\n';
+      Buffer.add_string buf perm_s;
+      Buffer.contents buf
+
+    let of_string s =
+      let kind_ls = Scanf.sscanf s ":%s\n" (fun x -> x) in
+      let kind_l = int_of_string kind_ls in
+      let kind_lsl = 2 + String.length kind_ls in
+      let kind_s = String.sub s kind_lsl kind_l in
+      let file_kind = File_kind.Host.of_string kind_s in
+      let rest_o = kind_lsl + kind_l in
+      let rest = String.sub s rest_o (String.length s - rest_o) in
+      let perm_ls = Scanf.sscanf rest ":%s\n" (fun x -> x) in
+      let perm_l = int_of_string perm_ls in
+      let perm_lsl = 2 + String.length perm_ls in
+      let perm_s = String.sub rest perm_lsl perm_l in
+      let file_perm = File_perm.Host.of_string perm_s in
+      let rest_o = perm_lsl + perm_l in
+      assert (rest_o = String.length rest);
+      { file_kind; file_perm }
+
   end
 
   let to_string ~host (k,p) =
@@ -216,4 +303,13 @@ module Host = struct
   let file_kind { file_kind } = file_kind
   let file_perm { file_perm } = file_perm
   let mode { mode } = mode
+
+  let to_string { mode } = Mode.Host.to_string mode
+  let of_string s =
+    let mode = Mode.Host.of_string s in
+    {
+      file_kind = mode.Mode.Host.file_kind;
+      file_perm = mode.Mode.Host.file_perm;
+      mode;
+    }
 end
