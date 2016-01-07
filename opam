@@ -10,6 +10,9 @@ license: "ISC"
 build: [
   [make "build"]
 ]
+build-test: [
+  [make "test"]
+]
 install: [
   [make "install"]
 ]
@@ -20,7 +23,7 @@ depends: [
   "base-bytes"
 ]
 depopts: [
-  "unix"
+  "base-unix"
   "ctypes"
 ]
 conflicts: [
