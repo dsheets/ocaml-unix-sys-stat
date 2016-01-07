@@ -43,6 +43,16 @@ module File_kind = struct
     | LNK  -> S_LNK
     | SOCK -> S_SOCK
   )
+
+  let of_unix = Unix.(function
+    | S_DIR  -> DIR
+    | S_CHR  -> CHR
+    | S_BLK  -> BLK
+    | S_REG  -> REG
+    | S_FIFO -> FIFO
+    | S_LNK  -> LNK
+    | S_SOCK -> SOCK
+  )
 end
 
 module File_perm = struct

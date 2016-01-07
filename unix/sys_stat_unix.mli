@@ -18,6 +18,7 @@
 module File_kind : sig
   val host : Sys_stat.File_kind.Host.t
   val to_unix : Sys_stat.File_kind.t -> Unix.file_kind
+  val of_unix : Unix.file_kind -> Sys_stat.File_kind.t
 end
 
 module File_perm : sig
