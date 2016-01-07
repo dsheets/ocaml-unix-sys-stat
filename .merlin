@@ -1,6 +1,5 @@
 PKG ctypes
 PKG unix-errno.unix
-PKG fd-send-recv
 
 S lib
 S lib_gen

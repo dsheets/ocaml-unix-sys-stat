@@ -1,3 +1,3 @@
-<*.*>: package(bytes), package(ctypes.stubs), package(unix-errno.unix), package(fd-send-recv)
+<*.*>: package(bytes), package(ctypes.stubs), package(unix-errno.unix)
 <unix_sys_stat_stubs.c>: use_ctypes, use_sys_stat_util
 <*.{cma,cmxa}>: use_sys_stat_stubs
