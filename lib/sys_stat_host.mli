@@ -18,7 +18,7 @@
 module Linux : sig
   module V4_1_12 : sig
     module Musl : sig
-      (*val v1_1_12 : Sys_stat.Host.t*)
+      val v1_1_12 : Sys_stat.Host.t
     end
   end
 end

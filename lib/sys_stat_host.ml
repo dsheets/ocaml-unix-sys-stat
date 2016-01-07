@@ -18,7 +18,7 @@
 module Linux = struct
   module V4_1_12 = struct
     module Musl = struct
-      (*let v1_1_12 = Sys_stat_map_linux_4_1_12_musl_1_1_12.host*)
+      let v1_1_12 = Sys_stat_map_linux_4_1_12_musl_1_1_12.host
     end
   end
 end
