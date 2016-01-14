@@ -22,10 +22,10 @@ depends: [
   "alcotest" {test}
   "base-bytes"
   "unix-errno"
+  "ctypes"
 ]
 depopts: [
   "base-unix"
-  "ctypes"
 ]
 conflicts: [
   "ctypes" {< "0.4.0"}
