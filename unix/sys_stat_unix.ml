@@ -147,22 +147,24 @@ module Stat = struct
     }))
 
 end
-(*
+
 let mkdir name mode =
   Errno_unix.raise_on_errno ~call:"mkdir" ~label:name (fun () ->
     (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
     let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
     ignore (C.mkdir name mode)
   )
+*)
+    
 
 let mknod name mode ~dev =
   Errno_unix.raise_on_errno ~call:"mknod" ~label:name (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    let dev = Ctypes.(coerce int64_t PosixTypes.dev_t dev) in
+    let dev = PosixTypes.Dev.of_int dev in
+    let mode = PosixTypes.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
     ignore (C.mknod name mode dev)
   )
-*)
+
+(*
 let stat name =
   Errno_unix.raise_on_errno ~call:"stat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
@@ -183,7 +185,7 @@ let fstat fd =
     ignore (C.fstat (Fd_send_recv.int_of_fd fd) (Ctypes.addr stat));
     stat
   )
-(*
+
 let chmod name mode =
   Errno_unix.raise_on_errno ~call:"chmod" ~label:name (fun () ->
     (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
@@ -197,5 +199,4 @@ let fchmod fd mode =
     let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
     ignore (C.fchmod (Fd_send_recv.int_of_fd fd) mode)
   )
-*)
 *)

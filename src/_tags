@@ -1,1 +1,1 @@
-<sys_stat_map.*>: package(ctypes.stubs), use_sys_stat_stubs
+<sys_stat_map.*>: package(ctypes.stubs), use_sys_stat_stubs, package(unix-errno.unix)
