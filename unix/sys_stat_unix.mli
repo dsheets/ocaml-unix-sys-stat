@@ -62,8 +62,9 @@ end
 
 val mkdir : string -> Sys_stat.Mode.t -> unit
 
-val mknod : string -> Sys_stat.Mode.t -> dev:int64 -> unit
-
+*)
+val mknod : string -> Sys_stat.Mode.t -> dev:int -> unit
+(*
 val stat : string -> Stat.t
 
 val lstat : string -> Stat.t
