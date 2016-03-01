@@ -21,7 +21,7 @@ depends: [
   "ocamlfind" {build}
   "alcotest" {test}
   "base-bytes"
-  "unix-errno"
+  "unix-errno" {>= "0.3.0"}
   "ctypes"
 ]
 depopts: [
