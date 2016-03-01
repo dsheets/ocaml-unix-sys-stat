@@ -291,6 +291,9 @@ module Mode = struct
     else
       File_kind.of_code_exn ~host:host.Host.file_kind code,
       File_perm.full_of_code ~host:host.Host.file_perm code
+
+  let of_code ~host code =
+    try Some (of_code_exn ~host code) with Not_found -> None
 end
 
 module Host = struct
