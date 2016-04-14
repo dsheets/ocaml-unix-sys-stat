@@ -49,7 +49,7 @@ build:
 	$(OCAMLBUILD) $(PRODUCTS)
 
 test: build
-	$(OCAMLBUILD) unix_test/test.native
+	$(OCAMLBUILD) lib_test/test.native
 	./test.native
 
 install:
