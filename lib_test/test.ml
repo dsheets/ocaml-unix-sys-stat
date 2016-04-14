@@ -17,10 +17,7 @@
 
 module File_perm =
 struct
-  let test_to_string_linux () =
-    let host = Sys_stat_host.Linux.V4_1_12.Musl.v1_1_12 in
-    let to_string = Sys_stat.File_perm.to_string ~host:host.Sys_stat.Host.file_perm in
-    let tests = Sys_stat.File_kind.([
+  let string_test_cases = Sys_stat.File_kind.([
       0o001, "--------x";
       0o010, "-----x---";
       0o100, "--x------";
@@ -30,8 +27,22 @@ struct
       0o004, "------r--";
       0o040, "---r-----";
       0o400, "r--------";
-    ]) in
-    ListLabels.iter tests
+    ])
+
+  let test_of_string_linux () =
+    let host = Sys_stat_host.Linux.V4_1_12.Musl.v1_1_12 in
+    let of_string = Sys_stat.File_perm.of_string ~host:host.Sys_stat.Host.file_perm in
+    ListLabels.iter string_test_cases
+      ~f:(fun (expected, string) ->
+          Printf.ksprintf Alcotest.(check int)
+            "%s parses as Oo%o" string expected
+            expected
+            (of_string string))
+
+  let test_to_string_linux () =
+    let host = Sys_stat_host.Linux.V4_1_12.Musl.v1_1_12 in
+    let to_string = Sys_stat.File_perm.to_string ~host:host.Sys_stat.Host.file_perm in
+    ListLabels.iter string_test_cases
       ~f:(fun (perm, expected) ->
           Printf.ksprintf Alcotest.(check string)
             "Oo%o prints as %s" perm expected
@@ -40,6 +51,7 @@ struct
       
 
   let tests = [
+    "of_string", `Quick, test_of_string_linux;
     "to_string", `Quick, test_to_string_linux;
   ]
 end
