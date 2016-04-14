@@ -15,6 +15,35 @@
  *
  *)
 
+module File_perm =
+struct
+  let test_to_string_linux () =
+    let host = Sys_stat_host.Linux.V4_1_12.Musl.v1_1_12 in
+    let to_string = Sys_stat.File_perm.to_string ~host:host.Sys_stat.Host.file_perm in
+    let tests = Sys_stat.File_kind.([
+      0o001, "--------x";
+      0o010, "-----x---";
+      0o100, "--x------";
+      0o002, "-------w-";
+      0o020, "----w----";
+      0o200, "-w-------";
+      0o004, "------r--";
+      0o040, "---r-----";
+      0o400, "r--------";
+    ]) in
+    ListLabels.iter tests
+      ~f:(fun (perm, expected) ->
+          Printf.ksprintf Alcotest.(check string)
+            "Oo%o prints as %s" perm expected
+            expected
+            (to_string perm))
+      
+
+  let tests = [
+    "to_string", `Quick, test_to_string_linux;
+  ]
+end
+
 
 module Mode =
 struct
@@ -35,7 +64,7 @@ struct
     ListLabels.iter tests
       ~f:(fun (kind, perm, expected) ->
           Printf.ksprintf Alcotest.(check string)
-            "(%s, %d) prints as %s"
+            "(%s, Oo%o) prints as %s"
             (Sys_stat.File_kind.to_string kind) perm expected
             expected
             (to_string (kind, perm)))
@@ -48,6 +77,7 @@ end
 
 
 let tests = [
+  "file_perm", File_perm.tests;
   "mode", Mode.tests;
 ]
 
