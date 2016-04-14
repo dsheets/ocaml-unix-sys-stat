@@ -59,6 +59,26 @@ module File_kind = struct
     | FIFO  -> 'p'
     | SOCK  -> 's'
 
+  let of_char = function
+    | '-' -> Some REG
+    | 'd' -> Some DIR
+    | 'c' -> Some CHR
+    | 'b' -> Some BLK
+    | 'l' -> Some LNK
+    | 'p' -> Some FIFO
+    | 's' -> Some SOCK
+    | _   -> None
+
+  let of_char_exn = function
+    | '-' -> REG
+    | 'd' -> DIR
+    | 'c' -> CHR
+    | 'b' -> BLK
+    | 'l' -> LNK
+    | 'p' -> FIFO
+    | 's' -> SOCK
+    | _   -> failwith "Sys_Stat.File_kind.of_char_exn"
+
   let to_string = function
     | REG   -> "REG"
     | DIR   -> "DIR"
@@ -335,6 +355,16 @@ module Mode = struct
     Bytes.set s 0 (File_kind.to_char k);
     String.blit ps 0 s 1 lps;
     Bytes.to_string s
+      
+  let of_string_failure () =
+    invalid_arg "Sys_Stat.Mode.of_string"
+
+  let of_string ~host s =
+    let h, t = s.[0], String.sub s 1 (pred (String.length s)) in
+    let p = File_perm.of_string ~host:host.Host.file_perm t in
+    match File_kind.of_char h with
+    | None -> of_string_failure ()
+    | Some k -> (k, p)
 
   let to_code ~host (kind, perm) =
     (File_kind.to_code ~host:host.Host.file_kind kind) lor perm
