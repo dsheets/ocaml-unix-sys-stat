@@ -59,6 +59,26 @@ module File_kind = struct
     | FIFO  -> 'p'
     | SOCK  -> 's'
 
+  let of_char = function
+    | '-' -> Some REG
+    | 'd' -> Some DIR
+    | 'c' -> Some CHR
+    | 'b' -> Some BLK
+    | 'l' -> Some LNK
+    | 'p' -> Some FIFO
+    | 's' -> Some SOCK
+    | _   -> None
+
+  let of_char_exn = function
+    | '-' -> REG
+    | 'd' -> DIR
+    | 'c' -> CHR
+    | 'b' -> BLK
+    | 'l' -> LNK
+    | 'p' -> FIFO
+    | 's' -> SOCK
+    | _   -> failwith "Sys_Stat.File_kind.of_char_exn"
+
   let to_string = function
     | REG   -> "REG"
     | DIR   -> "DIR"
@@ -196,7 +216,7 @@ module File_perm = struct
   let is_sgid   ~host code = (code land host.sgid) = host.sgid
   let is_sticky ~host code = (code land host.svtx) = host.svtx
 
-  let string_of_rwx xc rwx =
+  let string_of_rwx xc rwx = (* xc is the value of the x position where the executable bit is set *)
     let s = Bytes.create 3 in
     String.blit
       (match rwx lsr 1 with 3 -> "rw" | 2 -> "r-" | 1 -> "-w" | _ -> "--")
@@ -224,6 +244,64 @@ module File_perm = struct
       (rwx (if is_sticky ~host code then 't' else 'x') o)
       0 s 6 3;
     Bytes.to_string s
+
+  let of_string_failure () =
+    invalid_arg "Sys_Stat.File_perm.of_string"
+
+  type special = Nothing | Setuid | Sticky
+
+  let rwx_of_string s i =
+    let n = match s.[i+0] with
+      | 'r' -> 4
+      | '-' -> 0
+      | _ -> of_string_failure ()
+    in
+    let n = match s.[i+1] with
+      | 'w' -> 2 lor n
+      | '-' -> n
+      | _ -> of_string_failure () in
+    let n = match s.[i+2] with
+      | 'x'|'s'|'t' -> 1 lor n
+      | '-'|'S'|'T' -> n
+      | _ -> of_string_failure ()
+    in
+    let special = match s.[i+2] with
+      | 'x'|'-' -> Nothing
+      | 's'|'S' -> Setuid
+      | 't'|'T' -> Sticky
+      | _ -> of_string_failure ()
+    in
+    (n, special)
+
+  let of_string ~host str =
+    let umask = mask_and_rshift host.access_mask host.rwxu
+    and gmask = mask_and_rshift host.access_mask host.rwxg
+    and omask = mask_and_rshift host.access_mask host.rwxo
+    and suidmask = mask_and_rshift host.full_mask host.suid
+    and sgidmask = mask_and_rshift host.full_mask host.sgid
+    and stickymask = mask_and_rshift host.full_mask host.svtx
+    and u, extrau = rwx_of_string str 0
+    and g, extrag = rwx_of_string str 3
+    and o, extrao = rwx_of_string str 6 in
+    let suid = match extrau with
+      | Setuid -> suidmask
+      | Nothing -> 0o0
+      | Sticky -> of_string_failure () in
+    let sgid = match extrag with
+      | Setuid -> sgidmask
+      | Nothing -> 0o0
+      | Sticky -> of_string_failure () in
+    let sticky = match extrao with
+      | Setuid -> of_string_failure ()
+      | Nothing -> 0o0
+      | Sticky -> stickymask in
+      0o0
+      lor (inject_and_lshift umask u)
+      lor (inject_and_lshift gmask g)
+      lor (inject_and_lshift omask o)
+      lor suid
+      lor sgid
+      lor sticky
 end
 
 module Mode = struct
@@ -277,6 +355,16 @@ module Mode = struct
     Bytes.set s 0 (File_kind.to_char k);
     String.blit ps 0 s 1 lps;
     Bytes.to_string s
+      
+  let of_string_failure () =
+    invalid_arg "Sys_Stat.Mode.of_string"
+
+  let of_string ~host s =
+    let h, t = s.[0], String.sub s 1 (pred (String.length s)) in
+    let p = File_perm.of_string ~host:host.Host.file_perm t in
+    match File_kind.of_char h with
+    | None -> of_string_failure ()
+    | Some k -> (k, p)
 
   let to_code ~host (kind, perm) =
     (File_kind.to_code ~host:host.Host.file_kind kind) lor perm
