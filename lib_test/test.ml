@@ -48,11 +48,21 @@ struct
             "Oo%o prints as %s" perm expected
             expected
             (to_string perm))
-      
+
+  let test_roundtrip_linux () =
+    let host = Sys_stat_host.Linux.V4_1_12.Musl.v1_1_12 in
+    ArrayLabels.iter Permission_strings.permission_strings
+      ~f:(fun s ->
+          Printf.ksprintf Alcotest.(check string) 
+            "to_string (of_string %s) == %s" s s
+            s
+            (Sys_stat.File_perm.to_string ~host:host.Sys_stat.Host.file_perm
+               (Sys_stat.File_perm.of_string ~host:host.Sys_stat.Host.file_perm s)))
 
   let tests = [
     "of_string", `Quick, test_of_string_linux;
     "to_string", `Quick, test_to_string_linux;
+    "roundtrip", `Quick, test_roundtrip_linux;
   ]
 end
 
