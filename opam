@@ -19,6 +19,7 @@ install: [
 remove: [make "uninstall"]
 depends: [
   "ocamlfind" {build}
+  "ocamlbuild" {build}
   "alcotest" {test}
   "base-bytes"
   "unix-errno" {>= "0.3.0"}
