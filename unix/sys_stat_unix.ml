@@ -161,7 +161,9 @@ let mknod name mode ~dev =
   Errno_unix.raise_on_errno ~call:"mknod" ~label:name (fun () ->
     let dev = PosixTypes.Dev.of_int dev in
     let mode = PosixTypes.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
-    ignore (C.mknod name mode dev)
+    if C.mknod name mode dev <> 0
+    then None
+    else Some ()
   )
 
 (*
