@@ -1,12 +1,13 @@
 opam-version: "1.2"
 name: "unix-sys-stat"
-version: "0.3.0"
+version: "0.3.1"
 maintainer: "sheets@alum.mit.edu"
 authors: ["David Sheets" "Jeremy Yallop"]
 homepage: "https://github.com/dsheets/ocaml-unix-sys-stat"
 bug-reports: "https://github.com/dsheets/ocaml-unix-sys-stat/issues"
 dev-repo: "https://github.com/dsheets/ocaml-unix-sys-stat.git"
 license: "ISC"
+tags: ["unix" "posix" "sys/stat.h" "syscall" "stat"]
 build: [
   [make "build"]
 ]
@@ -22,7 +23,7 @@ depends: [
   "ocamlbuild" {build}
   "alcotest" {test}
   "base-bytes"
-  "unix-errno" {>= "0.3.0"}
+  "unix-errno" {>= "0.4.0"}
   "ctypes"
 ]
 depopts: [
