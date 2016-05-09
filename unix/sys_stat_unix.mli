@@ -31,38 +31,29 @@ end
 
 val host : Sys_stat.Host.t
 
-(*
 module Stat : sig
+  open Posix_types
+
   type t
 
-  val of_dev_t : PosixTypes.dev_t -> int32
-  val of_ino_t : PosixTypes.ino_t -> Unsigned.uint64
-  val of_nlink_t : PosixTypes.nlink_t -> Unsigned.uint64
-  val of_mode_t : PosixTypes.mode_t -> Unsigned.uint32
-  val of_uid_t : Unsigned.uint64 -> Unsigned.uint64
-  val of_gid_t : Unsigned.uint64 -> Unsigned.uint64
-  val of_off_t : PosixTypes.off_t -> int64
-  val of_blkcnt_t : Unsigned.uint64 -> int64
-  val of_time_t : PosixTypes.time_t -> int64
-
-  val dev_int : t -> int32
-  val ino_int : t -> Unsigned.uint64
-  val nlink_int : t -> Unsigned.uint64
-  val mode_int : t -> Unsigned.uint32
-  val uid_int : t -> Unsigned.uint64
-  val gid_int : t -> Unsigned.uint64
-  val rdev_int : t -> int32
-  val size_int : t -> int64
-  val blocks_int : t -> int64
-  val atime_int : t -> int64
-  val mtime_int : t -> int64
-  val ctime_int : t -> int64
+  val dev    : t -> dev_t
+  val ino    : t -> ino_t
+  val nlink  : t -> nlink_t
+  val mode   : t -> mode_t
+  val uid    : t -> uid_t
+  val gid    : t -> gid_t
+  val rdev   : t -> dev_t
+  val size   : t -> off_t
+  val blocks : t -> blkcnt_t
+  val atime  : t -> time_t
+  val mtime  : t -> time_t
+  val ctime  : t -> time_t
   val to_unix : host:Sys_stat.Host.t -> t -> Unix.LargeFile.stats
 end
 
-val mkdir : string -> Sys_stat.Mode.t -> unit
+(* val mkdir : string -> Sys_stat.Mode.t -> unit *)
 
-*)
+
 val mknod : string -> Sys_stat.Mode.t -> dev:int -> unit
 (*
 val stat : string -> Stat.t

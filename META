@@ -8,7 +8,7 @@ archive(native, plugin) = "sys_stat.cmxs"
 exists_if = "sys_stat.cma"
 
 package "unix" (
-  requires = "unix ctypes.stubs unix-sys-stat unix-errno.unix"
+  requires = "unix ctypes.stubs unix-sys-stat unix-errno.unix posix-types"
   archive(byte) = "unix_sys_stat.cma"
   archive(bytes, plugin) = "unix_sys_stat.cma"
   archive(native) = "unix_sys_stat.cmxa"
