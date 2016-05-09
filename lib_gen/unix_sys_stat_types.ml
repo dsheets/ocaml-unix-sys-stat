@@ -40,34 +40,27 @@ module C(F: Cstubs.Types.TYPE) = struct
   end
 
   module Stat = struct
-    open PosixTypes
+    open Posix_types
 
     type t
 
-    let lift = F.lift_typ
-    let uint64_t = lift uint64_t
-    let uid_t = F.typedef uint64_t "uid_t"
-    let gid_t = F.typedef uint64_t "gid_t"
-    let blksize_t = F.typedef uint64_t "blksize_t"
-    let blkcnt_t = F.typedef uint64_t "blkcnt_t"
-
-    let t : t structure F.typ = lift (structure "stat")
-    let ( -:* ) s x = F.field t s x
-    let st_dev       = "st_dev"       -:* (lift dev_t)
-    let st_ino       = "st_ino"       -:* (lift ino_t)
-    let st_nlink     = "st_nlink"     -:* (lift nlink_t)
-    let st_mode      = "st_mode"      -:* (lift mode_t)
+    let t : t structure F.typ = F.lift_typ (structure "stat")
+    let ( -:* ) s x = F.field t s (F.lift_typ x)
+    let st_dev       = "st_dev"       -:* dev_t
+    let st_ino       = "st_ino"       -:* ino_t
+    let st_nlink     = "st_nlink"     -:* nlink_t
+    let st_mode      = "st_mode"      -:* mode_t
     let st_uid       = "st_uid"       -:* uid_t
     let st_gid       = "st_gid"       -:* gid_t
-    let st_rdev      = "st_rdev"      -:* (lift dev_t)
-    let st_size      = "st_size"      -:* (lift off_t)
+    let st_rdev      = "st_rdev"      -:* dev_t
+    let st_size      = "st_size"      -:* off_t
     let st_blksize   = "st_blksize"   -:* blksize_t
     let st_blocks    = "st_blocks"    -:* blkcnt_t
-    let st_atime     = "st_atime"     -:* (lift time_t)
+    let st_atime     = "st_atime"     -:* time_t
     (*let atimensec = "atimensec" -:* uint32_t (* Linux only? *)*)
-    let st_mtime     = "st_mtime"     -:* (lift time_t)
+    let st_mtime     = "st_mtime"     -:* time_t
     (*let mtimensec = "mtimensec" -:* uint32_t (* Linux only? *)*)
-    let st_ctime     = "st_ctime"     -:* (lift time_t)
+    let st_ctime     = "st_ctime"     -:* time_t
     (*let ctimensec = "ctimensec" -:* uint32_t (* Linux only? *)*)
   end
 end

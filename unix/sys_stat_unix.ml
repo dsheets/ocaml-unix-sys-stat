@@ -95,7 +95,6 @@ let host = Sys_stat.Host.({
   mode = Mode.host;
 })
 
-(*
 module Stat = struct
   open Ctypes
   open PosixTypes
@@ -104,58 +103,49 @@ module Stat = struct
 
   type t = Type.Stat.t structure
 
-  let of_dev_t     = coerce dev_t     int32_t
-  let of_ino_t     = coerce ino_t     uint64_t
-  let of_nlink_t   = coerce nlink_t   uint64_t
-  let of_mode_t    = coerce mode_t    uint32_t
-  let of_uid_t     = coerce uid_t     uint64_t
-  let of_gid_t     = coerce gid_t     uint64_t
-  let of_off_t     = coerce off_t     int64_t
-  let of_blkcnt_t  = coerce blkcnt_t  int64_t
-  let of_time_t    = coerce time_t    int64_t
-
-  let dev_int s       = of_dev_t     (getf s st_dev)
-  let ino_int s       = of_ino_t     (getf s st_ino)
-  let nlink_int s     = of_nlink_t   (getf s st_nlink)
-  let mode_int s      = of_mode_t    (getf s st_mode)
-  let uid_int s       = of_uid_t     (getf s st_uid)
-  let gid_int s       = of_gid_t     (getf s st_gid)
-  let rdev_int s      = of_dev_t     (getf s st_rdev)
-  let size_int s      = of_off_t     (getf s st_size)
-  let blocks_int s    = of_blkcnt_t  (getf s st_blocks)
-  let atime_int s     = of_time_t    (getf s st_atime)
-  let mtime_int s     = of_time_t    (getf s st_mtime)
-  let ctime_int s     = of_time_t    (getf s st_ctime)
+  let dev s       = getf s st_dev
+  let ino s       = getf s st_ino
+  let nlink s     = getf s st_nlink
+  let mode s      = getf s st_mode
+  let uid s       = getf s st_uid
+  let gid s       = getf s st_gid
+  let rdev s      = getf s st_rdev
+  let size s      = getf s st_size
+  let blocks s    = getf s st_blocks
+  let atime s     = getf s st_atime
+  let mtime s     = getf s st_mtime
+  let ctime s     = getf s st_ctime
 
   let to_unix ~host t =
     let (st_kind, st_perm) = Sys_stat.Mode.(
-      of_code_exn ~host:Mode.host (UInt32.to_int (mode_int t))
+      of_code_exn ~host:host.Sys_stat.Host.mode (Mode.to_int (mode t))
     ) in
-    Ctypes.(Unix.LargeFile.({
-      st_dev   = Int32.to_int (dev_int t);
-      st_ino   = UInt64.to_int (ino_int t);
+    Posix_types.(Unix.LargeFile.({
+      st_dev   = Dev.to_int (dev t);
+      st_ino   = Ino.to_int (ino t);
       st_kind  = File_kind.to_unix st_kind;
       st_perm;
-      st_nlink = UInt64.to_int (nlink_int t);
-      st_uid   = UInt64.to_int (uid_int t);
-      st_gid   = UInt64.to_int (gid_int t);
-      st_rdev  = Int32.to_int (rdev_int t);
-      st_size  = size_int t;
-      st_atime = Int64.to_float (atime_int t);
-      st_mtime = Int64.to_float (mtime_int t);
-      st_ctime = Int64.to_float (ctime_int t);
+      st_nlink = Nlink.to_int (nlink t);
+      st_uid   = Uid.to_int (uid t);
+      st_gid   = Gid.to_int (gid t);
+      st_rdev  = Dev.to_int (rdev t);
+      st_size  = Off.to_int64 (size t);
+      st_atime = float_of_int (Time.to_int (atime t));
+      st_mtime = float_of_int (Time.to_int (mtime t));
+      st_ctime = float_of_int (Time.to_int (ctime t));
     }))
 
 end
 
+(*
 let mkdir name mode =
   Errno_unix.raise_on_errno ~call:"mkdir" ~label:name (fun () ->
     (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
     let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
     ignore (C.mkdir name mode)
   )
-*)
     
+*)
 
 let mknod name mode ~dev =
   Errno_unix.raise_on_errno ~call:"mknod" ~label:name (fun () ->
