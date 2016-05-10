@@ -44,7 +44,7 @@ module C(F: Cstubs.Types.TYPE) = struct
 
     type t
 
-    let t : t structure F.typ = F.lift_typ (structure "stat")
+    let t : t structure F.typ = F.structure "stat"
     let ( -:* ) s x = F.field t s (F.lift_typ x)
     let st_dev       = "st_dev"       -:* dev_t
     let st_ino       = "st_ino"       -:* ino_t
@@ -62,5 +62,6 @@ module C(F: Cstubs.Types.TYPE) = struct
     (*let mtimensec = "mtimensec" -:* uint32_t (* Linux only? *)*)
     let st_ctime     = "st_ctime"     -:* time_t
     (*let ctimensec = "ctimensec" -:* uint32_t (* Linux only? *)*)
+    let () = F.seal t
   end
 end
