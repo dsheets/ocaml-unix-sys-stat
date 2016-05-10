@@ -170,14 +170,16 @@ let lstat name =
     else Some stat
   )
 
-(*
+
 let fstat fd =
   Errno_unix.raise_on_errno ~call:"fstat" (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.fstat (Fd_send_recv.int_of_fd fd) (Ctypes.addr stat));
-    stat
+    if C.fstat (Unix_representations.int_of_file_descr fd) (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
 
+(*
 let chmod name mode =
   Errno_unix.raise_on_errno ~call:"chmod" ~label:name (fun () ->
     (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
