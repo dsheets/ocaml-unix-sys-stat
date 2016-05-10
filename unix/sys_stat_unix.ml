@@ -137,15 +137,13 @@ module Stat = struct
 
 end
 
-(*
 let mkdir name mode =
   Errno_unix.raise_on_errno ~call:"mkdir" ~label:name (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.mkdir name mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.mkdir name mode <> 0
+    then None
+    else Some ()
   )
-    
-*)
 
 let mknod name mode ~dev =
   Errno_unix.raise_on_errno ~call:"mknod" ~label:name (fun () ->
@@ -156,39 +154,43 @@ let mknod name mode ~dev =
     else Some ()
   )
 
-(*
 let stat name =
   Errno_unix.raise_on_errno ~call:"stat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.stat name (Ctypes.addr stat));
-    stat
+    if C.stat name (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
 
 let lstat name =
   Errno_unix.raise_on_errno ~call:"lstat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.lstat name (Ctypes.addr stat));
-    stat
+    if C.lstat name (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
+
 
 let fstat fd =
   Errno_unix.raise_on_errno ~call:"fstat" (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.fstat (Fd_send_recv.int_of_fd fd) (Ctypes.addr stat));
-    stat
+    if C.fstat (Unix_representations.int_of_file_descr fd) (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
 
 let chmod name mode =
   Errno_unix.raise_on_errno ~call:"chmod" ~label:name (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.chmod name mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.chmod name mode <> 0
+    then None
+    else Some ()
   )
 
 let fchmod fd mode =
   Errno_unix.raise_on_errno ~call:"fchmod" (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.fchmod (Fd_send_recv.int_of_fd fd) mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.fchmod (Unix_representations.int_of_file_descr fd) mode <> 0
+    then None
+    else Some ()
   )
-*)

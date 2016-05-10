@@ -1,3 +1,4 @@
 <*.*>: package(bytes), package(ctypes.stubs), package(unix-errno.unix), package(posix-types)
 <unix_sys_stat_stubs.c>: use_ctypes, use_sys_stat_util
+<*.{ml,mli}>: package(unix-type-representations)
 <*.{cma,cmxa}>: use_sys_stat_stubs
