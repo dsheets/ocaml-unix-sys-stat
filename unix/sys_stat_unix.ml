@@ -162,14 +162,15 @@ let stat name =
     else Some stat
   )
 
-(*
 let lstat name =
   Errno_unix.raise_on_errno ~call:"lstat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.lstat name (Ctypes.addr stat));
-    stat
+    if C.lstat name (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
 
+(*
 let fstat fd =
   Errno_unix.raise_on_errno ~call:"fstat" (fun () ->
     let stat = Ctypes.make Type.Stat.t in
