@@ -51,8 +51,7 @@ module Stat : sig
   val to_unix : host:Sys_stat.Host.t -> t -> Unix.LargeFile.stats
 end
 
-(* val mkdir : string -> Sys_stat.Mode.t -> unit *)
-
+val mkdir : string -> Sys_stat.Mode.t -> unit
 
 val mknod : string -> Sys_stat.Mode.t -> dev:int -> unit
 (*

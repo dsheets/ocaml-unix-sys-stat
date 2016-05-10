@@ -16,7 +16,7 @@
  *)
 
 open Ctypes
-open PosixTypes
+open Posix_types
 
 module Types = Unix_sys_stat_types.C(Unix_sys_stat_types_detected)
 

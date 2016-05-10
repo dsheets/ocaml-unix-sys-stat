@@ -137,15 +137,13 @@ module Stat = struct
 
 end
 
-(*
 let mkdir name mode =
   Errno_unix.raise_on_errno ~call:"mkdir" ~label:name (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.mkdir name mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.mkdir name mode <> 0
+    then None
+    else Some ()
   )
-    
-*)
 
 let mknod name mode ~dev =
   Errno_unix.raise_on_errno ~call:"mknod" ~label:name (fun () ->
