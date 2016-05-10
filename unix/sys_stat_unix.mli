@@ -34,7 +34,9 @@ val host : Sys_stat.Host.t
 module Stat : sig
   open Posix_types
 
-  type t
+  type tag 
+  type t = tag Ctypes.structure
+  val t : t Ctypes.typ
 
   val dev    : t -> dev_t
   val ino    : t -> ino_t

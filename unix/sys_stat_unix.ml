@@ -101,7 +101,9 @@ module Stat = struct
   open Unsigned
   open Type.Stat
 
-  type t = Type.Stat.t structure
+  type tag = Type.Stat.t
+  type t = tag structure
+  let t = Type.Stat.t
 
   let dev s       = getf s st_dev
   let ino s       = getf s st_ino
