@@ -16,19 +16,19 @@
  *)
 
 type lstat_result =
-    Stat_info of Sys_stat_unix.Stat.t
+  | Stat_info of Sys_stat_unix.Stat.t
   | Stat_error of int
 
 external lstat_job :
-  string -> Sys_stat_unix.Stat.t -> nativeint -> lstat_result Lwt_unix.job
-  = "unix_sys_stat_lwt_lstat_job"
+  string -> Sys_stat_unix.Stat.t -> nativeint -> lstat_result Lwt_unix.job =
+  "unix_sys_stat_lwt_lstat_job"
 
 let lstat path =
   let stat = Ctypes.make Sys_stat_unix.Stat.t in
   let job = lstat_job path stat Ctypes.(raw_address_of_ptr (to_voidp (addr stat))) in
   let open Lwt in 
   Lwt_unix.run_job job >>= function
-    Stat_info stat ->
+  | Stat_info stat ->
     Lwt.return stat
   | Stat_error errno -> 
     Errno_unix.raise_errno ~call:"lstat" ~label:path errno
