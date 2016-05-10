@@ -15,3 +15,12 @@ package "unix" (
   archive(native, plugin) = "unix_sys_stat.cmxs"
   exists_if = "unix_sys_stat.cma"
 )
+
+package "lwt" (
+  requires = "threads unix-sys-stat.unix lwt.preemptive"
+  archive(byte) = "unix_sys_stat_lwt.cma"
+  archive(byte, plugin) = "unix_sys_stat_lwt.cma"
+  archive(native) = "unix_sys_stat_lwt.cmxa"
+  archive(native, plugin) = "unix_sys_stat_lwt.cmxs"
+  exists_if = "unix_sys_stat_lwt.cma"
+)

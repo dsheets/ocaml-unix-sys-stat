@@ -1,0 +1,3 @@
+<*.*>: package(alcotest), package(ctypes), package(unix-errno.unix), use_sys_stat_stubs
+<*.*>: package(unix-type-representations), package(lwt.unix)
+<*.*>: use_sys_stat_stubs, use_sys_stat_lwt_stubs

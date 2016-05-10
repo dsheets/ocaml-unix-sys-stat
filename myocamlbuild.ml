@@ -2,6 +2,7 @@ open Ocamlbuild_plugin;;
 open Ocamlbuild_pack;;
 
 let ctypes_libdir = Sys.getenv "CTYPES_LIB_DIR" in
+let lwt_libdir = Sys.getenv "LWT_LIB_DIR" in
 let ocaml_libdir = Sys.getenv "OCAML_LIB_DIR" in
 
 dispatch begin
@@ -67,6 +68,7 @@ dispatch begin
     dep ["c"; "compile"; "use_sys_stat_util"]
       ["unix/unix_sys_stat_util.o"; "unix/unix_sys_stat_util.h"];
     flag ["c"; "compile"; "use_ctypes"] & S[A"-I"; A ctypes_libdir];
+    flag ["c"; "compile"; "use_lwt"] & S[A"-I"; A lwt_libdir];
     flag ["c"; "compile"; "debug"] & A"-g";
 
     (* Linking generated stubs *)
@@ -80,11 +82,18 @@ dispatch begin
     flag ["ocaml"; "link"; "native"; "library"; "use_sys_stat_stubs"] &
       S[A"-cclib"; A"-lunix_sys_stat_stubs"];
 
+    flag ["ocaml"; "link"; "byte"; "library"; "use_sys_stat_lwt_stubs"] &
+      S[A"-dllib"; A"-lunix_sys_stat_lwt_stubs"];
+    flag ["ocaml"; "link"; "native"; "library"; "use_sys_stat_lwt_stubs"] &
+      S[A"-cclib"; A"-lunix_sys_stat_lwt_stubs"];
+
     (* Linking tests *)
     flag ["ocaml"; "link"; "byte"; "program"; "use_sys_stat_stubs"] &
       S[A"-dllib"; A"-lunix_sys_stat_stubs"; A"-I"; A"unix/"];
     dep ["ocaml"; "link"; "native"; "program"; "use_sys_stat_stubs"]
       ["unix/libunix_sys_stat_stubs"-.-(!Options.ext_lib)];
 
+    flag ["ocaml"; "link"; "byte"; "program"; "use_sys_stat_lwt_stubs"] &
+      S[A"-dllib"; A"-lunix_lwt_sys_stat_stubs"];
   | _ -> ()
 end;;
