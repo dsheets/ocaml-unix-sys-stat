@@ -154,14 +154,15 @@ let mknod name mode ~dev =
     else Some ()
   )
 
-(*
 let stat name =
   Errno_unix.raise_on_errno ~call:"stat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
-    ignore (C.stat name (Ctypes.addr stat));
-    stat
+    if C.stat name (Ctypes.addr stat) <> 0
+    then None
+    else Some stat
   )
 
+(*
 let lstat name =
   Errno_unix.raise_on_errno ~call:"lstat" ~label:name (fun () ->
     let stat = Ctypes.make Type.Stat.t in
