@@ -14,3 +14,5 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  *)
+
+val lstat : string -> Sys_stat_unix.Stat.t Lwt.t
