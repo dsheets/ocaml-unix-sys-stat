@@ -179,14 +179,15 @@ let fstat fd =
     else Some stat
   )
 
-(*
 let chmod name mode =
   Errno_unix.raise_on_errno ~call:"chmod" ~label:name (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.chmod name mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.chmod name mode <> 0
+    then None
+    else Some ()
   )
 
+(*
 let fchmod fd mode =
   Errno_unix.raise_on_errno ~call:"fchmod" (fun () ->
     (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)

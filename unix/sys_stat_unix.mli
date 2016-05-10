@@ -61,8 +61,8 @@ val lstat : string -> Stat.t
 
 val fstat : Unix.file_descr -> Stat.t
 
-(*
 val chmod : string -> Sys_stat.Mode.t -> unit
 
+(*
 val fchmod : Unix.file_descr -> Sys_stat.Mode.t -> unit
 *)
