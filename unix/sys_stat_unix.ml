@@ -187,11 +187,10 @@ let chmod name mode =
     else Some ()
   )
 
-(*
 let fchmod fd mode =
   Errno_unix.raise_on_errno ~call:"fchmod" (fun () ->
-    (*let mode = Int32.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in*)
-    let mode = Ctypes.(coerce uint32_t PosixTypes.mode_t Unsigned.UInt32.zero) in
-    ignore (C.fchmod (Fd_send_recv.int_of_fd fd) mode)
+    let mode = Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Mode.host mode) in
+    if C.fchmod (Unix_representations.int_of_file_descr fd) mode <> 0
+    then None
+    else Some ()
   )
-*)
