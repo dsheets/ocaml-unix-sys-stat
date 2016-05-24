@@ -22,32 +22,32 @@ module Types = Unix_sys_stat_types.C(Unix_sys_stat_types_detected)
 
 module C(F: Cstubs.FOREIGN) = struct
 
-  let mkdir = F.foreign "unix_sys_stat_mkdir" (
+  let mkdir = F.(foreign "unix_sys_stat_mkdir" (
     string @-> mode_t @-> returning int
-  )
+  ))
 
-  let mknod = F.foreign "unix_sys_stat_mknod" (
+  let mknod = F.(foreign "unix_sys_stat_mknod" (
     string @-> mode_t @-> dev_t @-> returning int
-  )
+  ))
 
-  let stat = F.foreign "unix_sys_stat_stat" (
+  let stat = F.(foreign "unix_sys_stat_stat" (
     string @-> ptr Types.Stat.t @-> returning int
-  )
+  ))
 
-  let lstat = F.foreign "unix_sys_stat_lstat" (
+  let lstat = F.(foreign "unix_sys_stat_lstat" (
     string @-> ptr Types.Stat.t @-> returning int
-  )
+  ))
 
-  let fstat = F.foreign "unix_sys_stat_fstat" (
+  let fstat = F.(foreign "unix_sys_stat_fstat" (
     int @-> ptr Types.Stat.t @-> returning int
-  )
+  ))
 
-  let chmod = F.foreign "unix_sys_stat_chmod" (
+  let chmod = F.(foreign "unix_sys_stat_chmod" (
     string @-> mode_t @-> returning int
-  )
+  ))
 
-  let fchmod = F.foreign "unix_sys_stat_fchmod" (
+  let fchmod = F.(foreign "unix_sys_stat_fchmod" (
     int @-> mode_t @-> returning int
-  )
+  ))
 
 end
