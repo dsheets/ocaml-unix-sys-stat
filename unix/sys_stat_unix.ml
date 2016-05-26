@@ -16,7 +16,11 @@
  *)
 
 module Type = Unix_sys_stat_types.C(Unix_sys_stat_types_detected)
-module C = Unix_sys_stat_bindings.C(Unix_sys_stat_generated)
+module C = Unix_sys_stat_bindings.C(
+  struct
+    include Unix_sys_stat_generated
+    let foreign f = Unix_sys_stat_generated.foreign ("unix_sys_stat_"^ f)
+  end)
 
 module File_kind = struct
   open Sys_stat.File_kind

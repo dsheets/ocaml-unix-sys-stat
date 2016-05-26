@@ -49,6 +49,17 @@ dispatch begin
                  A"--ml-file";
                A(env "unix/%_generated.ml")]));
 
+    rule "cstubs: lwt/x_bindings.ml -> x_stubs.c, x_generated.ml"
+      ~prods:["lwt/%_lwt_stubs.c"; "lwt/%_lwt_generated.ml"]
+      ~deps: ["lib_gen/%_bindgen.byte"]
+      (fun env build ->
+        Cmd (S[A(env "lib_gen/%_bindgen.byte");
+               A"--lwt-bindings";
+               A"--c-file";
+               A(env "lwt/%_lwt_stubs.c");
+                 A"--ml-file";
+               A(env "lwt/%_lwt_generated.ml")]));
+
     rule "sys_stat_maps: maps/x -> lib/sys_stat_map_x.ml"
       ~prods:["lib/sys_stat_map_%.ml"]
       ~deps: ["src/sys_stat_srcgen.byte"; "maps/%"]
