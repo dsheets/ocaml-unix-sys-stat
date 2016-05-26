@@ -15,20 +15,12 @@
  *
  *)
 
-type lstat_result =
-  | Stat_info of Sys_stat_unix.Stat.t
-  | Stat_error of int
-
-external lstat_job :
-  string -> Sys_stat_unix.Stat.t -> nativeint -> lstat_result Lwt_unix.job =
-  "unix_sys_stat_lwt_lstat_job"
+module Generated = Unix_sys_stat_lwt_generated
+module C = Unix_sys_stat_bindings.C(Generated)
+open Lwt.Infix
 
 let lstat path =
   let stat = Ctypes.make Sys_stat_unix.Stat.t in
-  let job = lstat_job path stat Ctypes.(raw_address_of_ptr (to_voidp (addr stat))) in
-  let open Lwt in 
-  Lwt_unix.run_job job >>= function
-  | Stat_info stat ->
-    Lwt.return stat
-  | Stat_error errno -> 
-    Errno_unix.raise_errno ~call:"lstat" ~label:path errno
+  (C.lstat path (Ctypes.addr stat)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"lstat" ~label:path errno
+  else Lwt.return stat
