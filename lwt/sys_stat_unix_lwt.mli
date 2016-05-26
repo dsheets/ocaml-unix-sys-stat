@@ -15,4 +15,18 @@
  *
  *)
 
-val lstat : string -> Sys_stat_unix.Stat.t Lwt.t
+open Sys_stat_unix
+
+val lstat : string -> Stat.t Lwt.t
+
+val stat : string -> Stat.t Lwt.t
+
+val fstat : Unix.file_descr -> Stat.t Lwt.t
+
+val mkdir : string -> Sys_stat.Mode.t -> unit Lwt.t
+
+val mknod : string -> Sys_stat.Mode.t -> dev:int -> unit Lwt.t
+
+val chmod : string -> Sys_stat.Mode.t -> unit Lwt.t
+
+val fchmod : Unix.file_descr -> Sys_stat.Mode.t -> unit Lwt.t
