@@ -43,7 +43,11 @@ dispatch begin
       ~prods:["unix/%_stubs.c"; "unix/%_generated.ml"]
       ~deps: ["lib_gen/%_bindgen.byte"]
       (fun env build ->
-        Cmd (A(env "lib_gen/%_bindgen.byte")));
+        Cmd (S[A(env "lib_gen/%_bindgen.byte");
+               A"--c-file";
+               A(env "unix/%_stubs.c");
+                 A"--ml-file";
+               A(env "unix/%_generated.ml")]));
 
     rule "sys_stat_maps: maps/x -> lib/sys_stat_map_x.ml"
       ~prods:["lib/sys_stat_map_%.ml"]
