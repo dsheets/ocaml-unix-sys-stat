@@ -24,14 +24,11 @@ depends: [
   "alcotest" {test}
   "base-bytes"
   "unix-errno" {>= "0.4.0"}
-  "ctypes"
+  "ctypes" {>= "0.6.0"}
   "posix-types"
   "unix-type-representations"
 ]
 depopts: [
   "base-unix"
   "lwt"
-]
-conflicts: [
-  "ctypes" {< "0.4.0"}
 ]
