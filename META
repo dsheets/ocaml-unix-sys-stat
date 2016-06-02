@@ -1,4 +1,4 @@
-version = "0.3.2"
+version = "0.4.0"
 description = "Unix sys/stat types, maps, and support"
 requires = "bytes"
 archive(byte) = "sys_stat.cma"
