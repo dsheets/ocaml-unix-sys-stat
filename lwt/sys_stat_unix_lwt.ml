@@ -15,20 +15,51 @@
  *
  *)
 
-type lstat_result =
-  | Stat_info of Sys_stat_unix.Stat.t
-  | Stat_error of int
+module Generated = Unix_sys_stat_lwt_generated
+module C = Unix_sys_stat_bindings.C(Generated)
+open Lwt.Infix
 
-external lstat_job :
-  string -> Sys_stat_unix.Stat.t -> nativeint -> lstat_result Lwt_unix.job =
-  "unix_sys_stat_lwt_lstat_job"
+let decode_mode mode =
+  Posix_types.Mode.of_int (Sys_stat.Mode.to_code ~host:Sys_stat_unix.Mode.host mode)
 
 let lstat path =
   let stat = Ctypes.make Sys_stat_unix.Stat.t in
-  let job = lstat_job path stat Ctypes.(raw_address_of_ptr (to_voidp (addr stat))) in
-  let open Lwt in 
-  Lwt_unix.run_job job >>= function
-  | Stat_info stat ->
-    Lwt.return stat
-  | Stat_error errno -> 
-    Errno_unix.raise_errno ~call:"lstat" ~label:path errno
+  (C.lstat path (Ctypes.addr stat)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"lstat" ~label:path errno
+  else Lwt.return stat
+
+let stat path =
+  let stat = Ctypes.make Sys_stat_unix.Stat.t in
+  (C.stat path (Ctypes.addr stat)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"stat" ~label:path errno
+  else Lwt.return stat
+
+let fstat fd =
+  let fd = Unix_representations.int_of_file_descr fd in
+  let stat = Ctypes.make Sys_stat_unix.Stat.t in
+  (C.fstat fd (Ctypes.addr stat)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"fstat" ~label:(string_of_int fd) errno
+  else Lwt.return stat
+
+let mkdir path mode =
+  (C.mkdir path (decode_mode mode)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"mkdir" ~label:path errno
+  else Lwt.return_unit
+
+let mknod path mode ~dev =
+  let dev = Posix_types.Dev.of_int dev in
+  (C.mknod path (decode_mode mode) dev).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"mknod" ~label:path errno
+  else Lwt.return_unit
+
+let chmod path mode =
+  (C.chmod path (decode_mode mode)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"chmod" ~label:path errno
+  else Lwt.return_unit
+
+let fchmod fd mode =
+  let fd = Unix_representations.int_of_file_descr fd in
+  (C.fchmod fd (decode_mode mode)).Generated.lwt >>= fun (i, errno) ->
+  if i < 0 then Errno_unix.raise_errno ~call:"fchmod" ~label:(string_of_int fd) errno
+  else Lwt.return_unit
+

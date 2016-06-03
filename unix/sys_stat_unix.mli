@@ -34,7 +34,7 @@ val host : Sys_stat.Host.t
 module Stat : sig
   open Posix_types
 
-  type tag 
+  type tag = Unix_sys_stat_bindings.Types.Stat.t
   type t = tag Ctypes.structure
   val t : t Ctypes.typ
 
