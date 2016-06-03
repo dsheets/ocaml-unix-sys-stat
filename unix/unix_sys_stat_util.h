@@ -30,3 +30,6 @@ int unix_sys_stat_fstat(int fd, struct stat *buf);
 int unix_sys_stat_chmod(const char *path, mode_t mode);
 
 int unix_sys_stat_fchmod(int fd, mode_t mode);
+
+int unix_sys_stat_fstatat(int dirfd, const char *pathname, struct stat *buf,
+                          int flags);

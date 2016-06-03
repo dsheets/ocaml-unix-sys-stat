@@ -200,3 +200,11 @@ let fchmod fd mode =
     then None
     else Some ()
   )
+
+let fstatat fd pathname flags =
+  Errno_unix.raise_on_errno ~call:"fstatat" (fun () ->
+      let stat = Ctypes.make Type.Stat.t in
+      if C.fstatat (Unix_representations.int_of_file_descr fd) pathname (Ctypes.addr stat) flags <> 0
+      then None
+      else Some stat
+    )

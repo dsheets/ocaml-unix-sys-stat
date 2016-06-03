@@ -74,3 +74,13 @@ int unix_sys_stat_fchmod(int fd, mode_t mode) {
   caml_acquire_runtime_system();
   return retval;
 }
+
+int unix_sys_stat_fstatat(int dirfd, const char *pathname,
+                          struct stat *buf, int flags) {
+  int retval;
+  caml_release_runtime_system();
+  retval = fstatat(dirfd, pathname, buf, flags);
+  caml_acquire_runtime_system();
+  return retval;
+}
+
