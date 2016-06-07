@@ -50,4 +50,7 @@ module C(F: Cstubs.FOREIGN) = struct
     int @-> mode_t @-> returning int
   ))
 
+  let fstatat = F.(foreign "fstatat" (
+      int @-> string @-> ptr Types.Stat.t @-> int @-> returning int
+  ))
 end

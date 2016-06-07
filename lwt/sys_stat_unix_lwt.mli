@@ -30,3 +30,5 @@ val mknod : string -> Sys_stat.Mode.t -> dev:int -> unit Lwt.t
 val chmod : string -> Sys_stat.Mode.t -> unit Lwt.t
 
 val fchmod : Unix.file_descr -> Sys_stat.Mode.t -> unit Lwt.t
+
+val fstatat : Unix.file_descr -> string -> flags:Sys_stat.At.t option -> Stat.t Lwt.t

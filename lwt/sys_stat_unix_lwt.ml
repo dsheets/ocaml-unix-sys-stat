@@ -63,3 +63,17 @@ let fchmod fd mode =
   if i < 0 then Errno_unix.raise_errno ~call:"fchmod" ~label:(string_of_int fd) errno
   else Lwt.return_unit
 
+let fstatat fd pathname ~flags =
+  let flags =
+    match flags with
+    | Some (Sys_stat.At.Symlink_nofollow as nf) ->
+      Sys_stat.At.to_code ~host:Sys_stat_unix.At.host nf
+    | None -> 0
+  in
+  let stat = Ctypes.make Sys_stat_unix.Stat.t in
+  let fd = Unix_representations.int_of_file_descr fd in
+  (C.fstatat fd pathname (Ctypes.addr stat) flags).Generated.lwt >>= fun (i, errno) ->
+  if i <> 0
+  then Errno_unix.raise_errno ~call:"fstatat" ~label:pathname errno
+  else Lwt.return stat
+

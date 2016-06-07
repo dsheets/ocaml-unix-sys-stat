@@ -29,6 +29,10 @@ module Mode : sig
   val host : Sys_stat.Mode.Host.t
 end
 
+module At : sig
+  val host : Sys_stat.At.Host.t
+end
+
 val host : Sys_stat.Host.t
 
 module Stat : sig
@@ -67,3 +71,4 @@ val chmod : string -> Sys_stat.Mode.t -> unit
 
 val fchmod : Unix.file_descr -> Sys_stat.Mode.t -> unit
 
+val fstatat : Unix.file_descr -> string -> flags:Sys_stat.At.t option -> Stat.t

@@ -93,10 +93,22 @@ module Mode = struct
   })
 end
 
+module At = struct
+  open Sys_stat.At
+
+  let host = 
+    let defns = Type.At.({
+        symlink_nofollow = at_symlink_nofollow
+      })
+    in
+    Host.of_defns defns
+end
+
 let host = Sys_stat.Host.({
   file_kind = File_kind.host;
   file_perm = File_perm.host;
   mode = Mode.host;
+  at = At.host;
 })
 
 module Stat = struct
@@ -200,3 +212,16 @@ let fchmod fd mode =
     then None
     else Some ()
   )
+
+let fstatat fd pathname ~flags =
+  let flags =
+    match flags with
+    | Some (Sys_stat.At.Symlink_nofollow as nf) -> Sys_stat.At.to_code ~host:At.host nf
+    | None -> 0
+  in
+  Errno_unix.raise_on_errno ~call:"fstatat" (fun () ->
+      let stat = Ctypes.make Type.Stat.t in
+      if C.fstatat (Unix_representations.int_of_file_descr fd) pathname (Ctypes.addr stat) flags <> 0
+      then None
+      else Some stat
+    )

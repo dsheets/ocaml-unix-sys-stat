@@ -65,9 +65,22 @@ let () =
 
 let () = print_endline "})\n"
 
+let () = print_endline "let at = Sys_stat.At.(Host.of_defns {"
+
+let at_defns = Sys_stat.(At.Host.to_defns host.Host.at)
+let () =
+  let open Sys_stat.At in
+  let { symlink_nofollow } = at_defns in
+  printf "  symlink_nofollow = %d;\n" symlink_nofollow
+
+let () = print_endline "})\n"
+
+
 let () = print_endline "let host = {"
 let () = print_endline "  Sys_stat.Host.file_kind;"
 let () = print_endline "  Sys_stat.Host.file_perm;"
 let () =
   print_endline "  mode = Sys_stat.Mode.Host.({ file_kind; file_perm; });"
+let () =
+  print_endline "  at;"
 let () = print_endline "}"
