@@ -71,4 +71,4 @@ val chmod : string -> Sys_stat.Mode.t -> unit
 
 val fchmod : Unix.file_descr -> Sys_stat.Mode.t -> unit
 
-val fstatat : Unix.file_descr -> string -> int -> Stat.t
+val fstatat : Unix.file_descr -> string -> flags:Sys_stat.At.t option -> Stat.t

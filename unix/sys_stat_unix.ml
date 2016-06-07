@@ -213,7 +213,12 @@ let fchmod fd mode =
     else Some ()
   )
 
-let fstatat fd pathname flags =
+let fstatat fd pathname ~flags =
+  let flags =
+    match flags with
+    | Some (Sys_stat.At.Symlink_nofollow as nf) -> Sys_stat.At.to_code ~host:At.host nf
+    | None -> 0
+  in
   Errno_unix.raise_on_errno ~call:"fstatat" (fun () ->
       let stat = Ctypes.make Type.Stat.t in
       if C.fstatat (Unix_representations.int_of_file_descr fd) pathname (Ctypes.addr stat) flags <> 0
