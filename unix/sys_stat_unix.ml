@@ -93,10 +93,22 @@ module Mode = struct
   })
 end
 
+module At = struct
+  open Sys_stat.At
+
+  let host = 
+    let defns = Type.At.({
+        symlink_nofollow = at_symlink_nofollow
+      })
+    in
+    Host.of_defns defns
+end
+
 let host = Sys_stat.Host.({
   file_kind = File_kind.host;
   file_perm = File_perm.host;
   mode = Mode.host;
+  at = At.host;
 })
 
 module Stat = struct

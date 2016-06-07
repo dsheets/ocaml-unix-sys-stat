@@ -29,6 +29,10 @@ module Mode : sig
   val host : Sys_stat.Mode.Host.t
 end
 
+module At : sig
+  val host : Sys_stat.At.Host.t
+end
+
 val host : Sys_stat.Host.t
 
 module Stat : sig

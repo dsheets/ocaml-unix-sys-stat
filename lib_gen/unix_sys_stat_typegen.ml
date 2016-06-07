@@ -21,5 +21,6 @@ let () =
   let type_oc = open_out "lib_gen/unix_sys_stat_types_detect.c" in
   let fmt = Format.formatter_of_out_channel type_oc in
   Format.fprintf fmt "#include <sys/stat.h>@.";
+  Format.fprintf fmt "#include <fcntl.h>@.";
   Cstubs.Types.write_c fmt (module Unix_sys_stat_types.C);
   close_out type_oc;

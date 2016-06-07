@@ -27,6 +27,15 @@ let find_least_one i = index32.(
   Int32.(to_int (shift_right_logical (mul debruijn32 (logand i (neg i))) 27))
 )
 
+let split_length_prefixed s =
+  Scanf.sscanf s ":%d\n%n"
+    (fun len rest ->
+       (String.sub s 0 (len+rest),
+        String.sub s (rest + len) (String.length s - len - rest)))
+
+let write_length_prefixed s =
+  Printf.sprintf ":%d\n%s" (String.length s) s
+
 module File_kind = struct
   type t =
     | DIR
@@ -384,23 +393,70 @@ module Mode = struct
     try Some (of_code_exn ~host code) with Not_found -> None
 end
 
+module At = struct
+
+  type t = Symlink_nofollow
+
+  type defns = {
+    symlink_nofollow: int
+  }
+
+  module Host = struct
+    type t = defns
+    let of_defns d = d
+    let to_defns d = d
+
+    let to_string { symlink_nofollow } =
+      write_length_prefixed
+        (Printf.sprintf "AT_SYMLINK_NOFOLLOW\t%x\n" symlink_nofollow)
+
+    let of_string s =
+      let map, _ = split_length_prefixed s in
+      Scanf.sscanf map ":%d\nAT_SYMLINK_NOFOLLOW\t%x\n"
+        (fun _ symlink_nofollow -> { symlink_nofollow })
+  end
+
+  let to_string = function
+    | Symlink_nofollow -> "Symlink_nofollow"
+
+  let of_string = function
+    | "Symlink_nofollow" -> Symlink_nofollow
+    | _                  -> invalid_arg "Sys_stat.At.of_string"
+
+  let to_code ~host:{symlink_nofollow} = function
+    Symlink_nofollow -> symlink_nofollow
+
+  let of_code_exn ~host:{symlink_nofollow} code =
+    if code = symlink_nofollow then Symlink_nofollow
+    else raise Not_found
+
+  let of_code ~host code =
+    try Some (of_code_exn ~host code) with Not_found -> None
+end
+
 module Host = struct
   type t = {
     file_kind : File_kind.Host.t;
     file_perm : File_perm.Host.t;
     mode      : Mode.Host.t;
+    at        : At.Host.t;
   }
 
   let file_kind { file_kind } = file_kind
   let file_perm { file_perm } = file_perm
   let mode { mode } = mode
 
-  let to_string { mode } = Mode.Host.to_string mode
+  let to_string { mode; at } =
+    At.Host.to_string at ^ Mode.Host.to_string mode
+
   let of_string s =
-    let mode = Mode.Host.of_string s in
+    let atbit, rest = split_length_prefixed s in
+    let mode = Mode.Host.of_string rest in
+    let at   = At.Host.of_string atbit in
     {
       file_kind = mode.Mode.Host.file_kind;
       file_perm = mode.Mode.Host.file_perm;
       mode;
+      at;
     }
 end

@@ -103,11 +103,36 @@ module Mode : sig
   val of_code     : host:Host.t -> int    -> t option
 end
 
+module At : sig
+  type t = Symlink_nofollow
+
+  type defns = {
+    symlink_nofollow: int
+  }
+
+  module Host : sig
+    type t
+    val of_defns : defns -> t
+    val to_defns : t -> defns
+
+    val to_string : t -> string
+    val of_string : string -> t
+  end
+
+  val to_string   : t      -> string
+  val of_string   : string -> t
+
+  val to_code     : host:Host.t -> t      -> int
+  val of_code_exn : host:Host.t -> int    -> t
+  val of_code     : host:Host.t -> int    -> t option
+end
+
 module Host : sig
   type t = {
     file_kind : File_kind.Host.t;
     file_perm : File_perm.Host.t;
     mode      : Mode.Host.t;
+    at        : At.Host.t;
   }
 
   val to_string : t -> string

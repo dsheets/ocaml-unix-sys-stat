@@ -39,6 +39,10 @@ module C(F: Cstubs.Types.TYPE) = struct
     let s_isvtx = F.(constant "S_ISVTX" int)
   end
 
+  module At = struct
+    let at_symlink_nofollow = F.(constant "AT_SYMLINK_NOFOLLOW" int)
+  end
+
   module Stat = struct
     open Posix_types
 
