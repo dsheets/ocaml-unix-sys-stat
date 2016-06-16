@@ -1,6 +1,6 @@
 opam-version: "1.2"
 name: "unix-sys-stat"
-version: "0.4.0"
+version: "0.5.0"
 maintainer: "sheets@alum.mit.edu"
 authors: ["David Sheets" "Jeremy Yallop"]
 homepage: "https://github.com/dsheets/ocaml-unix-sys-stat"
