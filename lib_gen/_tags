@@ -1,1 +1,1 @@
-<*.*>: package(ctypes.stubs), package(posix-types)
+<*.*>: package(ctypes.stubs), package(posix-types), package(ctypes-build.stub-generator)
