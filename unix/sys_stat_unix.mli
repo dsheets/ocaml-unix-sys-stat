@@ -50,6 +50,7 @@ module Stat : sig
   val gid    : t -> gid_t
   val rdev   : t -> dev_t
   val size   : t -> off_t
+  val blksize: t -> blksize_t
   val blocks : t -> blkcnt_t
   val atime  : t -> time_t
   val mtime  : t -> time_t

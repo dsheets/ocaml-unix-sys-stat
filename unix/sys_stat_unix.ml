@@ -129,6 +129,7 @@ module Stat = struct
   let gid s       = getf s st_gid
   let rdev s      = getf s st_rdev
   let size s      = getf s st_size
+  let blksize s   = getf s st_blksize
   let blocks s    = getf s st_blocks
   let atime s     = getf s st_atime
   let mtime s     = getf s st_mtime
