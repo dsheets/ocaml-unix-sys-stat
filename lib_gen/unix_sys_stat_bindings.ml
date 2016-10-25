@@ -54,3 +54,12 @@ module C(F: Cstubs.FOREIGN) = struct
       int @-> string @-> ptr Types.Stat.t @-> int @-> returning int
   ))
 end
+
+module Prefixed_C(F: Cstubs.FOREIGN) =
+struct
+  include C
+      (struct
+        include F
+        let foreign f = F.foreign ("unix_sys_stat_"^ f)
+      end)
+end
