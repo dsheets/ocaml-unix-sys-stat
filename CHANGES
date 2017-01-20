@@ -1,3 +1,7 @@
+0.5.2 (2017-01-20):
+* Install cmx files
+* Switch the build system to ctypes-build
+
 0.5.1 (2016-08-09):
 * Add Sys_stat_unix.Stat.blksize accessor
 
